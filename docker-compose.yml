@@ -1,0 +1,165 @@
+# =============================================================================
+#  docker-compose.yml
+# =============================================================================
+#  ¿QUÉ ES ESTE ARCHIVO?
+#  Docker Compose es una herramienta que permite definir y arrancar VARIOS
+#  servicios (contenedores) de una sola vez describiéndolos en un fichero YAML.
+#
+#  ¿POR QUÉ LO USAMOS AQUÍ?
+#  En este proyecto tenemos 3 piezas:
+#     1. PostgreSQL  -> la base de datos
+#     2. Backend     -> la API REST de Spring Boot
+#     3. Frontend    -> la aplicación Angular
+#
+#  Sin Docker, cada desarrollador (o tú mismo en otro ordenador) tendría que
+#  instalar PostgreSQL a mano, con riesgo de versiones distintas y errores.
+#  Con este fichero basta ejecutar:
+#
+#      docker compose up -d
+#
+#  y todo arranca igual en cualquier máquina. Esto se llama
+#  "entorno reproducible" y es una práctica muy valorada en empresas.
+#
+#  NOTA: YAML es sensible a la indentación (usa ESPACIOS, nunca tabuladores).
+# =============================================================================
+
+# Versión obsoleta en Compose V2 (ya no es necesaria), la omitimos a propósito.
+# (Si ves "version: '3.8'" en otros proyectos, es un vestigio de versiones antiguas)
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # SERVICIO 1: PostgreSQL (nuestra base de datos)
+  # ---------------------------------------------------------------------------
+  postgres:
+    # Imagen oficial de PostgreSQL, variante "alpine":
+    #   - "16"      -> versión mayor de PostgreSQL (16 es estable y actual)
+    #   - "alpine"  -> imagen basada en Alpine Linux => pesa mucho menos (~150MB
+    #                  vs ~400MB de la versión normal). Ideal para desarrollo.
+    image: postgres:16-alpine
+
+    # Nombre del contenedor. Si ejecutas `docker ps` verás este nombre,
+    # lo que facilita identificarlo frente a nombres generados aleatoriamente.
+    container_name: portfolio-postgres
+
+    # Política de reinicio:
+    #   - "always"         -> siempre reinicia (aunque el Docker daemon arranque
+    #                          después del contenedor)
+    #   - "unless-stopped" -> reinicia salvo que lo hayas parado manualmente
+    # Usamos "unless-stopped": si un día paras el contenedor a mano, no insiste
+    # en arrancarlo otra vez.
+    restart: unless-stopped
+
+    # --- Puerto ---
+    # Formato: "PUERTO_DEL_HOST:PUERTO_DEL_CONTENEDOR"
+    # PostgreSQL dentro de su contenedor SIEMPRE escucha en el puerto 5432.
+    # Lo "mapeamos" al 5432 de tu máquina para que:
+    #   - Puedes conectarte desde DBeaver / pgAdmin / IntelliJ para inspeccionar
+    #     la BBDD directamente.
+    #   - El backend (en otro contenedor o en tu equipo) pueda conectarse.
+    # Si el 5432 estuviera ocupado en tu PC, cambiarías SOLO el primero:
+    #   "5433:5432"
+    ports:
+      - "5432:5432"
+
+    # --- Variables de entorno ---
+    # PostgreSQL DEBE saber qué contraseña usar al crearse. Docker inyecta
+    # estas variables dentro del contenedor (las lee la imagen oficial).
+    environment:
+      # Nombre de la base de datos que se creará automáticamente al arrancar.
+      POSTGRES_DB: portfolio
+      # Usuario con privilegios de administración de esa BBDD.
+      POSTGRES_USER: portfolio_user
+      # Contraseña. EN PRODUCCIÓN NUNCA se escribe aquí en claro:
+      # se usan "secrets" o variables del sistema. Para desarrollo local va bien.
+      POSTGRES_PASSWORD: portfolio_password
+
+    # --- Volumen persistente ---
+    # Los contenedores son EFÍMEROS: si borras el contenedor, pierdes sus datos.
+    # Un "volumen" es un trozo de disco de tu equipo que Docker monta dentro
+    # del contenedor => los datos sobreviven a `docker compose down`.
+    #   - "portfolio_postgres_data" es el nombre lógico del volumen
+    #   - "/var/lib/postgresql/data" es DÓNDE PostgreSQL guarda sus ficheros
+    #     dentro del contenedor (ruta fija de la imagen oficial)
+    # Si algún día quieres empezar la BBDD de cero:
+    #   docker compose down -v   (la "-v" borra el volumen = datos)
+    volumes:
+      - portfolio_postgres_data:/var/lib/postgresql/data
+
+    # --- Salud (healthcheck) ---
+    # Comprueba periódicamente si el servicio está realmente operativo.
+    # "pg_isready" es una utilidad que viene en la imagen y responde si
+    # PostgreSQL acepta conexiones. Gracias a esto, los servicios que
+    # dependan de la BBDD (el backend) pueden esperar a que esté lista
+    # con la cláusula "depends_on: condition: service_healthy".
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio_user -d portfolio"]
+      # Cada cuánto lo comprueba y cuánto tarda en considerarse "caído".
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # SERVICIO 2: Backend Spring Boot  (SE ACTIVARÁ EN LA FASE 1)
+  # ---------------------------------------------------------------------------
+  # Está comentado por ahora porque aún no existe el Dockerfile del backend.
+  # En la Fase 1 descomentaremos este bloque:
+  #
+  # backend:
+  #   build:              # Compila la imagen desde el Dockerfile de backend/
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: portfolio-backend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8080:8080"     # La API REST de Spring Boot escucha en el 8080
+  #   environment:        # Configuración de la app (¡ojo, no confundir con la
+  #                       #  de postgres: aquí va lo que LEE Spring Boot!)
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/portfolio
+  #     #                           ^ "postgres" = nombre del SERVICIO definido
+  #     #                             arriba. Docker resuelve ese nombre como
+  #     #                             si fuera un dominio (DNS interno de la red
+  #     #                             por defecto de Compose). Por eso el backend
+  #     #                             NO usa "localhost" para hablar con la BBDD:
+  #     #                             localhost dentro del contenedor sería él mismo.
+  #     SPRING_DATASOURCE_USERNAME: portfolio_user
+  #     SPRING_DATASOURCE_PASSWORD: portfolio_password
+  #     JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET}   # lee del entorno/.env
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy   # esperar a que la BBDD pase el healthcheck
+  #
+  # ---------------------------------------------------------------------------
+  # SERVICIO 3: Frontend Angular  (SE ACTIVARÁ EN LA FASE 3)
+  # ---------------------------------------------------------------------------
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: portfolio-frontend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "4200:80"        # nginx sirve el HTML/JS compilado de Angular
+  #   depends_on:
+  #     - backend          # el frontend necesita la API disponible
+
+# -----------------------------------------------------------------------------
+# DEFINICIÓN DE VOLÚMENES A NIVEL SUPERIOR
+# -----------------------------------------------------------------------------
+# Arriba, en postgres, "volumes" referenciaba "portfolio_postgres_data".
+# Aquí se DECLARA ese volumen para que exista. Es obligatorio: sin esta sección,
+# Docker crearía un volumen "fantasma" difícil de gestionar después.
+volumes:
+  portfolio_postgres_data:
+
+# -----------------------------------------------------------------------------
+# REDES (opcional, no la usamos aún)
+# -----------------------------------------------------------------------------
+# Por defecto Compose crea una red privada para los servicios. Nosotros la
+# usaremos automáticamente: todos los servicios pueden comunicarse entre sí
+# usando el nombre del servicio (postgres, backend, frontend).
+# Si en el futuro quisieras aislar algo, declararías aquí una red nueva:
+#
+# networks:
+#   red_interna:
+#     driver: bridge
