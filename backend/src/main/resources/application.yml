@@ -1,0 +1,79 @@
+# =============================================================================
+#  application.yml  —  configuración de Spring Boot
+# =============================================================================
+#  Spring Boot acepta application.properties o application.yml (elegimos YAML
+#  por legibilidad y anidamiento). TODA configuración puede sobreescirse por
+#  variable de entorno, lo que permite usar el MISMO fichero en:
+#     - local (con los valores por defecto de abajo)
+#     - Docker (con variables del docker-compose)
+#     - producción (con las variables del proveedor de hosting)
+#
+#  Sintaxis:  ${VARIABLE_DE_ENTORNO:valor_por_defecto}
+#  Si la variable no existe, se usa el valor por defecto tras los dos puntos.
+# =============================================================================
+
+spring:
+  application:
+    name: portfolio-backend   # nombre que aparece en logs y en /actuator
+
+  # --- Conexión a la base de datos ---
+  datasource:
+    # JDBC = protocolo estándar de Java para hablar con BBDD relacionales.
+    # Puerto 5433 = mapeo del contenedor Docker en el HOST (ver docker-compose.yml):
+    # en este equipo hay un PostgreSQL nativo ocupando el 5432, por eso 5433.
+    # Dentro de Docker esto se sobreescribe con SPRING_DATASOURCE_URL
+    # (donde el host es "postgres", el nombre del servicio, y el puerto 5432).
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/portfolio}
+    username: ${SPRING_DATASOURCE_USERNAME:portfolio_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:portfolio_password}
+
+  # --- JPA / Hibernate ---
+  jpa:
+    hibernate:
+      # ESTRATEGIAS de generación del esquema por Hibernate:
+      #   none      -> Hibernate no toca el esquema (nosotros mandamos)
+      #   validate  -> NO crea nada, solo VERIFICA que las tablas creadas por
+      #                 Flyway coinciden con nuestras @Entity (¡nuestro caso!)
+      #   update    -> crea/altera tablas "a su manera" (peligroso: no versiona)
+      #   create-drop / create -> borra datos al arrancar (solo pruebas)
+      ddl-auto: validate
+    open-in-view: false
+    # OSIV (Open-Session-In-View) = mantener la sesión JPA abierta durante todo
+    # el request HTTP. Desactivarlo es BUENA PRÁCTICA: fuerza a cargar los datos
+    # dentro del Service (donde toca) y evita el temido "N+1 query" invisible.
+    show-sql: true            # imprime el SQL generado (útil para aprender)
+    properties:
+      hibernate:
+        format_sql: true      # SQL "bonito" multilínea en el log
+
+  # --- Flyway: migraciones de esquema y datos ---
+  flyway:
+    enabled: true
+    # Dónde buscar los scripts: src/main/resources/db/migration
+    locations: classpath:db/migration
+    # Si la BBDD tiene tablas pero no la tabla de control de Flyway, la
+    # "punto de partida" se crea automáticamente (útil si migras una BBDD
+    # existente). En una BBDD limpia no hace falta, pero no estorba.
+    baseline-on-migrate: true
+
+# --- Servidor ---
+server:
+  port: 8080                  # puerto de la API REST
+
+# --- Actuator (salud y métricas) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # expone /actuator/health e /actuator/info
+  endpoint:
+    health:
+      show-details: when_authorized   # detalle de health solo con auth
+
+# --- Configuración propia de la app (no es de Spring) ---
+app:
+  cors:
+    # Orígenes permitidos para llamadas desde el navegador (CORS).
+    # El frontend Angular corre en http://localhost:4200 en desarrollo.
+    # En producción se sobreescribe con la variable CORS_ALLOWED_ORIGINS.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}

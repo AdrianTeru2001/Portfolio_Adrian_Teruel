@@ -35,14 +35,14 @@ Portfolio_Adrian_Teruel/
 
 ---
 
-## 🚀 Puesta en marcha (por ahora, solo la BBDD)
+## 🚀 Puesta en marcha (BBDD + API)
 
 ```bash
 # 1. Crear tu copia local de las variables de entorno
 cp .env.example .env        # en Windows: copy .env.example .env
 
-# 2. Arrancar PostgreSQL
-docker compose up -d
+# 2. Arrancar PostgreSQL + la API REST (compila la imagen del backend)
+docker compose up -d --build
 
 # 3. Comprobar que vive
 docker compose ps           # debe indicar "healthy"
@@ -54,15 +54,29 @@ docker compose down
 # ⚠️ docker compose down -v   →  BORRA el volumen = pierdes los datos
 ```
 
-Conéctate a la BBDD con DBeaver/pgAdmin: host `localhost`, puerto `5432`,
+Conéctate a la BBDD con DBeaver/pgAdmin: host `localhost`, puerto `5433`
+(⚠️ en este equipo el 5432 lo ocupa un PostgreSQL nativo, por eso mapeamos 5433),
 usuario `portfolio_user`, contraseña `portfolio_password`, BBDD `portfolio`.
+
+### API REST (Fase 1)
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/perfil` | Datos personales |
+| GET | `/api/estudios` | Timeline académica |
+| GET | `/api/experiencias` | Timeline laboral |
+| GET | `/api/competencias` | Skills por categoría |
+| GET | `/api/proyectos` | Todos (`?tecnologia=x` filtra) |
+| GET | `/api/proyectos/destacados` | Destacados para la home |
+| POST/PUT/DELETE | `/api/proyectos` | CRUD (protegido con JWT en Fase 2) |
+| POST | `/api/contacto` | Formulario de contacto |
 
 ---
 
 ## 🗺️ Roadmap de fases
 
 - [x] **Fase 0** — Estructura del repo, Docker Compose con PostgreSQL, documentación
-- [ ] **Fase 1** — Backend: entidades, Flyway + seeds, CRUD + DTOs
+- [x] **Fase 1** — Backend: entidades, Flyway + seeds, CRUD + DTOs
 - [ ] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
 - [ ] **Fase 3** — Frontend: páginas públicas consumiendo la API
 - [ ] **Fase 4** — Admin: guard, interceptor, formularios de edición

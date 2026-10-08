@@ -53,14 +53,15 @@ services:
     # --- Puerto ---
     # Formato: "PUERTO_DEL_HOST:PUERTO_DEL_CONTENEDOR"
     # PostgreSQL dentro de su contenedor SIEMPRE escucha en el puerto 5432.
-    # Lo "mapeamos" al 5432 de tu máquina para que:
-    #   - Puedes conectarte desde DBeaver / pgAdmin / IntelliJ para inspeccionar
-    #     la BBDD directamente.
-    #   - El backend (en otro contenedor o en tu equipo) pueda conectarse.
-    # Si el 5432 estuviera ocupado en tu PC, cambiarías SOLO el primero:
-    #   "5433:5432"
+    #
+    # ⚠️ NOTA: usamos el 5433 en el HOST porque en este equipo ya hay un
+    # PostgreSQL NATIVO (servicio de Windows) ocupando el 5432. Si ambos
+    # escucharan en el 5432, las conexiones desde localhost podrían ir al
+    # servicio nativo equivocado (error "password authentication failed").
+    # El puerto INTERNO del contenedor sigue siendo 5432 (segunda parte).
+    # Si en el futuro paras el PostgreSQL nativo, puedes volver a "5432:5432".
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
     # --- Variables de entorno ---
     # PostgreSQL DEBE saber qué contraseña usar al crearse. Docker inyecta
@@ -100,35 +101,32 @@ services:
       retries: 5
 
   # ---------------------------------------------------------------------------
-  # SERVICIO 2: Backend Spring Boot  (SE ACTIVARÁ EN LA FASE 1)
+  # SERVICIO 2: Backend Spring Boot  (FASE 1)
   # ---------------------------------------------------------------------------
-  # Está comentado por ahora porque aún no existe el Dockerfile del backend.
-  # En la Fase 1 descomentaremos este bloque:
-  #
-  # backend:
-  #   build:              # Compila la imagen desde el Dockerfile de backend/
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: portfolio-backend
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8080:8080"     # La API REST de Spring Boot escucha en el 8080
-  #   environment:        # Configuración de la app (¡ojo, no confundir con la
-  #                       #  de postgres: aquí va lo que LEE Spring Boot!)
-  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/portfolio
-  #     #                           ^ "postgres" = nombre del SERVICIO definido
-  #     #                             arriba. Docker resuelve ese nombre como
-  #     #                             si fuera un dominio (DNS interno de la red
-  #     #                             por defecto de Compose). Por eso el backend
-  #     #                             NO usa "localhost" para hablar con la BBDD:
-  #     #                             localhost dentro del contenedor sería él mismo.
-  #     SPRING_DATASOURCE_USERNAME: portfolio_user
-  #     SPRING_DATASOURCE_PASSWORD: portfolio_password
-  #     JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET}   # lee del entorno/.env
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy   # esperar a que la BBDD pase el healthcheck
-  #
+  backend:
+    build:              # Compila la imagen desde el Dockerfile de backend/
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: portfolio-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"     # La API REST de Spring Boot escucha en el 8080
+    environment:        # Configuración que LEE Spring Boot
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/portfolio
+      #                           ^ "postgres" = nombre del SERVICIO definido
+      #                             arriba. Docker resuelve ese nombre como
+      #                             si fuera un dominio (DNS interno de la red
+      #                             por defecto de Compose). Por eso el backend
+      #                             NO usa "localhost" para hablar con la BBDD:
+      #                             localhost dentro del contenedor sería él mismo.
+      SPRING_DATASOURCE_USERNAME: portfolio_user
+      SPRING_DATASOURCE_PASSWORD: portfolio_password
+      # Origen permitido para CORS: el frontend (otro contenedor/host)
+      CORS_ALLOWED_ORIGINS: "http://localhost:4200"
+    depends_on:
+      postgres:
+        condition: service_healthy   # esperar a que la BBDD pase el healthcheck
+
   # ---------------------------------------------------------------------------
   # SERVICIO 3: Frontend Angular  (SE ACTIVARÁ EN LA FASE 3)
   # ---------------------------------------------------------------------------

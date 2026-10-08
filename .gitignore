@@ -2,14 +2,18 @@
 #  .gitignore
 # =============================================================================
 #  Ficheros que Git debe IGNORAR (no trackear ni subir al repositorio).
-#  Se organiza por bloques: primero lo general, luego por tecnología.
+#
+#  ⚠️ REGLA DE ORO: en .gitignore un comentario "#" SOLO cuenta si empieza
+#  la línea. Un "#" a mitad de línea se toma como parte del PATRÓN
+#  (por eso los patrones van solos y los comentarios en su propia línea).
+#
 #  Documentación oficial: https://git-scm.com/docs/gitignore
 # =============================================================================
 
 # -----------------------------------
 # BLOQUE 1: Sistema operativo
 # -----------------------------------
-# Ficheros que Windows/macOS generan sola y no aportan nada al proyecto.
+# Ficheros que Windows/macOS generan solas y no aportan nada al proyecto.
 # "Thumbs.db" = miniaturas de Windows; ".DS_Store" = Finder de macOS.
 Thumbs.db
 ehthumbs.db
@@ -21,20 +25,20 @@ Desktop.ini
 # -----------------------------------
 # Cada desarrollador tiene su propia configuración local de IDE;
 # subirla causaría conflictos constantes entre máquinas.
-.idea/            # IntelliJ IDEA / WebStorm
-.vscode/          # VS Code (configuración compartida se haría con .vscode/extensions.json a parte)
-*.iml             # ficheros de módulo de IntelliJ
+.idea/
+.vscode/
+*.iml
 *.ipr
 *.iws
-.project          # Eclipse
+.project
 .classpath
 .settings/
-*.swp             # vim
+*.swp
 
 # -----------------------------------
 # BLOQUE 3: Variables de entorno (¡CRÍTICO!)
 # -----------------------------------
-# Archivos .env contienen contraseñas, secretos JWT, credenciales de BBDD...
+# Los ficheros .env contienen contraseñas, secretos JWT, credenciales de BBDD...
 # Subirlos a un repositorio público = filtración de secretos.
 # SIEMPRE se ignora el .env, y se sube un ".env.example" (sin valores reales)
 # que sirve de plantilla para quien cloné el proyecto.
@@ -45,30 +49,25 @@ Desktop.ini
 # -----------------------------------
 # BLOQUE 4: Java / Spring Boot (backend)
 # -----------------------------------
-# Ficheros compilados y dependencias locales:
-target/                    # directorio de salida de Maven/Gradle
-build/                     # idem para Gradle
-*.class                    # bytecode compilado
+# Ficheros compilados y dependencias locales.
+# target/ = directorio de salida de Maven (contiene .class, .jar, logs)
+target/
+build/
+*.class
 *.jar
 *.war
 *.ear
-out/                       # salida de IntelliJ para módulos Java
+out/
 
-# Logs: nunca se versionan (suelen ocupar mucho y cambian constantemente).
+# Logs: nunca se versionan (ocupan mucho y cambian constantemente).
 *.log
 logs/
-
-# Si usas Spring Boot con actuator y métricas locales:
-.spring/
-
-# Ficheros de IDE de Eclipse/IntelliJ ya cubiertos arriba.
 
 # -----------------------------------
 # BLOQUE 5: Node.js / Angular (frontend)
 # -----------------------------------
 # node_modules: contiene TODAS las dependencias instaladas.
 # Se regenera con `npm install` a partir de package.json, por eso NO se sube.
-# (El repo sería enorme e innecesariamente lento).
 node_modules/
 
 # Angular: carpeta de build resultante de `ng build`.
@@ -82,7 +81,7 @@ dist/
 # -----------------------------------
 # BLOQUE 6: Builds y cobertura
 # -----------------------------------
-coverage/            # informes de cobertura de tests (jest/istanbul)
+coverage/
 *.lcov
 .nyc_output/
 
