@@ -14,6 +14,13 @@
     => genera "timeline__item timeline__item--estudio" o "--experiencia"
   -->
   <div class="timeline">
+    <!-- Estado de carga/error de la timeline (estudios + experiencias) -->
+    <app-estado-carga
+      [estado]="cargandoAlgo() ? 'cargando' : (falloAlgo() ? 'error' : 'ok')"
+      [tipo]="'timeline'"
+      [cantidad]="4"
+      (reintentar)="estudios.recargar(); experiencias.recargar()" />
+
     @for (item of lineaDeVida(); track item.id) {
       <article [class]="'timeline__item timeline__item--' + item.tipo">
         <!-- Punto de la línea de tiempo -->
@@ -50,6 +57,13 @@
   <h2 class="seccion__titulo">Competencias</h2>
 
   <div class="competencias">
+    <!-- Estado de carga/error de competencias -->
+    <app-estado-carga
+      [estado]="competencias.estado()"
+      [tipo]="'texto'"
+      [cantidad]="4"
+      (reintentar)="competencias.recargar()" />
+
     @for (grupo of porCategoria(); track grupo.categoria) {
       <div class="competencias__grupo">
         <h3 class="competencias__categoria">{{ etiquetaCategoria(grupo.categoria) }}</h3>

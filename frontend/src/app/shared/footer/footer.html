@@ -6,8 +6,8 @@
 <footer class="footer">
   <div class="footer__contenido">
     <div class="footer__col">
-      <p class="footer__titulo">{{ perfil()?.nombre ?? 'Adrián Teruel' }}</p>
-      <p class="footer__sub">{{ perfil()?.tituloProfesional ?? 'Desarrollador Full Stack' }}</p>
+      <p class="footer__titulo">{{ perfil.datos()?.nombre ?? 'Adrián Teruel' }}</p>
+      <p class="footer__sub">{{ perfil.datos()?.tituloProfesional ?? 'Desarrollador Full Stack' }}</p>
     </div>
 
     <div class="footer__col footer__redes">
@@ -16,13 +16,13 @@
         rel="noopener" evita que la página abierta acceda a window.opener
         (protección contra "tabnabbing").
       -->
-      @if (perfil()?.githubUrl; as github) {
+      @if (perfil.datos()?.githubUrl; as github) {
         <a [href]="github" target="_blank" rel="noopener">GitHub</a>
       }
-      @if (perfil()?.linkedinUrl; as linkedin) {
+      @if (perfil.datos()?.linkedinUrl; as linkedin) {
         <a [href]="linkedin" target="_blank" rel="noopener">LinkedIn</a>
       }
-      @if (perfil()?.email; as email) {
+      @if (perfil.datos()?.email; as email) {
         <a [href]="'mailto:' + email">Email</a>
       }
     </div>

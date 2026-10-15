@@ -1,8 +1,14 @@
 import { Component, computed, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PortfolioService } from '../../core/services/portfolio.service';
-import { Categoria, Competencia } from '../../core/models/portfolio.models';
+import { EstadoCarga } from '../../shared/estado-carga/estado-carga';
+import { recurso } from '../../core/http/recurso';
+import {
+  Categoria,
+  Competencia,
+  Estudio,
+  Experiencia,
+} from '../../core/models/portfolio.models';
 
 /**
  * PÁGINA: Trayectoria (estudios + experiencia) y Competencias.
@@ -10,19 +16,39 @@ import { Categoria, Competencia } from '../../core/models/portfolio.models';
  * Mezcla las dos timelines (estudios y experiencias) en una sola lista
  * ordenada por fecha descendente — es lo que espera ver un recruiter:
  * "por dónde ha pasado esta persona" de un vistazo.
+ *
+ * <p>Fase 5: ahora con `recurso()` → cada sección sabe si está cargando,
+ * ok o falló, y ofrece reintento.</p>
  */
 @Component({
   selector: 'app-trayectoria',
-  imports: [DatePipe],
+  imports: [DatePipe, EstadoCarga],
   templateUrl: './trayectoria.html',
   styleUrl: './trayectoria.scss',
 })
 export class Trayectoria {
   private portfolioService = inject(PortfolioService);
 
-  estudios = toSignal(this.portfolioService.getEstudios(), { initialValue: [] as import('../../core/models/portfolio.models').Estudio[] });
-  experiencias = toSignal(this.portfolioService.getExperiencias(), { initialValue: [] as import('../../core/models/portfolio.models').Experiencia[] });
-  competencias = toSignal(this.portfolioService.getCompetencias(), { initialValue: [] as Competencia[] });
+  estudios = recurso<Estudio[]>(() => this.portfolioService.getEstudios(), []);
+  experiencias = recurso<Experiencia[]>(() => this.portfolioService.getExperiencias(), []);
+  competencias = recurso<Competencia[]>(() => this.portfolioService.getCompetencias(), []);
+
+  /** ¿Está cargando ALGO de las dos fuentes de la timeline? */
+  cargandoAlgo(): boolean {
+    return (
+      this.estudios.estado() === 'cargando' ||
+      this.experiencias.estado() === 'cargando'
+    );
+  }
+
+  /** ¿Falló alguna de las tres fuentes? */
+  falloAlgo(): boolean {
+    return (
+      this.estudios.estado() === 'error' ||
+      this.experiencias.estado() === 'error' ||
+      this.competencias.estado() === 'error'
+    );
+  }
 
   /**
    * Mezcla estudios y experiencias en UNA sola lista tipada para la timeline.
@@ -33,7 +59,7 @@ export class Trayectoria {
    */
   lineaDeVida = computed(() => {
     const items = [
-      ...this.estudios().map((e) => ({
+      ...this.estudios.datos().map((e) => ({
         id: `e-${e.id}`,
         tipo: 'estudio' as const,
         titulo: e.titulo,
@@ -43,7 +69,7 @@ export class Trayectoria {
         fin: e.enCurso ? null : e.fechaFin,
         enCurso: e.enCurso,
       })),
-      ...this.experiencias().map((x) => ({
+      ...this.experiencias.datos().map((x) => ({
         id: `x-${x.id}`,
         tipo: 'experiencia' as const,
         titulo: x.puesto,
@@ -55,14 +81,14 @@ export class Trayectoria {
       })),
     ];
 
-    // Más reciente arriba: compara fechas ISO ("YYYY-MM-MM" ordena lexicográficamente)
+    // Más reciente arriba: compara fechas ISO ("YYYY-MM-DD" ordena lexicográficamente)
     return items.sort((a, b) => b.inicio.localeCompare(a.inicio));
   });
 
   /** Agrupa competencias por categoría para pintar secciones. */
   porCategoria = computed(() => {
     const mapa = new Map<Categoria, Competencia[]>();
-    for (const c of this.competencias()) {
+    for (const c of this.competencias.datos()) {
       const lista = mapa.get(c.categoria) ?? [];
       lista.push(c);
       mapa.set(c.categoria, lista);

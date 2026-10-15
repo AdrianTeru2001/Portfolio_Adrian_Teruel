@@ -1,0 +1,116 @@
+/* ===========================================================================
+   SKELETON (placeholder animado mientras carga)
+   ===========================================================================
+   La técnica "skeleton screen": bloques grises con un brillo que viaja de
+   izquierda a derecha. Da sensación de avance y evita el salto brusco del
+   contenido cuando llega (CLS: Cumulative Layout Shift).
+   =========================================================================== */
+.skeleton {
+  &--tarjetas {
+    display: grid;
+    // `min(300px, 100%)`: evita overflow horizontal en pantallas estrechas
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 1.25rem;
+  }
+
+  &--timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__card {
+    background: #1e293b;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__punto {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  // Bloque de línea: gris con "viaje de brillo"
+  &__linea {
+    height: 14px;
+    border-radius: 6px;
+    width: 100%;
+
+    &--ancha { width: 70%; height: 20px; }
+    &--media { width: 50%; }
+    &--corta { width: 40%; }
+  }
+
+  // Todos los bloques fantasma comparten el mismo estilo base
+  &__linea,
+  &__punto {
+    background: linear-gradient(
+      90deg,
+      #1e293b 25%,
+      #334155 50%,   // el "brillo" que viaja
+      #1e293b 75%
+    );
+    background-size: 200% 100%;   // doble de ancho para poder desplazar
+    animation: brillo 1.4s ease-in-out infinite;
+  }
+}
+
+/* Keyframe del brillo: mueve el gradiente de -100% a 100% */
+@keyframes brillo {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===========================================================================
+   AVISO DE ERROR
+   =========================================================================== */
+.error-carga {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+
+  &__icono {
+    font-size: 1.5rem;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 200px;
+
+    strong { color: #fca5a5; font-size: 0.95rem; }
+    small  { color: #94a3b8; font-size: 0.85rem; }
+  }
+
+  &__btn {
+    background: rgba(248, 113, 113, 0.15);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(248, 113, 113, 0.25); }
+  }
+}

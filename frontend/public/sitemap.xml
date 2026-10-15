@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml — mapa del sitio para los buscadores.
+
+  Cada <url> le dice a Google: "esta página existe, así es de importante
+  y así se llama". Ayuda a que rastree todo el sitio y a entender su
+  estructura.
+
+  IMPORTANTE: sustituye "https://TU-DOMINIO-AQUI.com" por tu dominio real
+  cuando lo despliegues (Fase 7). Mientras, sirve como plantilla lista.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://TU-DOMINIO-AQUI.com/</loc>
+    <changefreq>monthly</changefreq>   <!-- cada cuánto suele cambiar -->
+    <priority>1.0</priority>           <!-- 1.0 = página más importante -->
+  </url>
+
+  <url>
+    <loc>https://TU-DOMINIO-AQUI.com/trayectoria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://TU-DOMINIO-AQUI.com/proyectos</loc>
+    <changefreq>weekly</changefreq>    <!-- los proyectos cambian más -->
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://TU-DOMINIO-AQUI.com/contacto</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

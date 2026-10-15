@@ -1,12 +1,27 @@
 <!--
   ESTRUCTURA RAÍZ
   navbar (fijo) → router-outlet (página actual) → footer (fijo)
+
+  ACCESIBILIDAD: el "skip-link" (enlace de salto) es lo PRIMERO del DOM.
+  Permite a quien navega con TECLADO o lector de pantalla saltarse la
+  barra de navegación (que tiene muchos enlaces) e ir directo al contenido.
+  Visualmente está oculto (ver app.scss) y solo aparece al recibir foco.
 -->
+<a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
+
 <app-navbar />
 
-<main class="principal">
+<main id="contenido-principal" class="principal" tabindex="-1">
+  <!--
+    tabindex="-1" permite enfocar el <main> por código/JS (el skip-link
+    usa el atributo href para saltar aquí) sin añadirlo al orden natural
+    de tabulación de la página (que sería tabindex="0").
+  -->
   <!-- Hueco donde Angular inserta el componente de la ruta activa -->
   <router-outlet />
 </main>
 
 <app-footer />
+
+<!-- Botón flotante "volver arriba" (aparece al bajar) -->
+<app-scroll-top />

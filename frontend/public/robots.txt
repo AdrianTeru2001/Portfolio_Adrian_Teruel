@@ -1,0 +1,22 @@
+# robots.txt — instrucciones para los "crawlers" (Googlebot, etc.)
+# Los bots LEEN ESTE FICHERO antes de rastrear. Le dicen qué pueden y
+# qué no pueden indexar.
+#
+# Sintaxis:
+#   User-agent:  → quién aplica la regla (¿todos? ¿uno concreto?)
+#   Allow:       → ruta que SÍ pueden rastrear
+#   Disallow:    → ruta que NO deben rastrear
+#   Sitemap:     → dónde está el mapa del sitio (relativo a la raíz)
+
+# Regla general: permitir todo el sitio público
+User-agent: *
+Allow: /
+
+# El panel de administración es una ZONA PRIVADA: no queremos que aparezca
+# en los resultados de búsqueda (ni que alguien lo encuentre buscando
+# "adrianteruel admin"). El guard de Angular ya lo protege, pero esto
+# evita que el propio crawler lo rastree de más.
+Disallow: /admin
+
+# El sitemap ayuda a los bots a descubrir todas las páginas
+Sitemap: https://TU-DOMINIO-AQUI.com/sitemap.xml

@@ -20,7 +20,7 @@ npm run build      # build producción → dist/frontend/browser
 
 ```
 src/app/
-├── app.ts / app.html / app.scss   # shell: navbar + <router-outlet/> + footer
+├── app.ts / app.html / app.scss   # shell: skip-link + navbar + outlet + footer
 ├── app.routes.ts                  # rutas con LAZY LOADING (loadComponent)
 ├── app.config.ts                  # providers: router, http, signals
 ├── core/                          # "lo que no es UI"
@@ -29,12 +29,16 @@ src/app/
 │   │   ├── auth.service.ts        # login/logout + signal de sesión
 │   │   ├── auth.interceptor.ts    # añade Authorization + gestiona 401
 │   │   └── admin.guard.ts         # protege /admin (canMatch)
+│   ├── http/recurso.ts            # Fase 5: estado cargando/ok/error + recargar()
+│   ├── seo/seo.service.ts         # Fase 5: title/description/OG por ruta
 │   ├── models/portfolio.models.ts # interfaces TS = espejo de los DTOs Java
 │   └── services/                  # HttpClient → Observables tipados
 │       ├── admin.service.ts       # escrituras (crear/editar/borrar)
 ├── shared/                        # componentes reutilizables
 │   ├── navbar/                    # menú responsive con signal
-│   └── footer/                    # demo de toSignal()
+│   ├── footer/                    # datos del perfil (patrón recurso)
+│   ├── estado-carga/              # Fase 5: skeleton + aviso "Reintentar"
+│   └── scroll-top/                # Fase 5: botón "volver arriba"
 └── features/                      # una carpeta por página
     ├── home/                      # hero + destacados
     ├── trayectoria/               # timeline + competencias (computed)
@@ -47,6 +51,11 @@ src/app/
         ├── dashboard/             # resumen y accesos
         ├── proyectos-admin/       # CRUD completo (tabla + form crear/editar)
         └── perfil-admin/          # edición del perfil (PUT /perfil)
+
+frontend/public/                   # se copia tal cual a dist/ (sin compilar)
+├── robots.txt                     # qué puede rastrear Google (+ Disallow /admin)
+├── sitemap.xml                    # mapa del sitio (cambia el dominio al desplegar)
+└── favicon.svg                    # favicon de marca (iniciales AT)
 ```
 
 ## Conceptos clave aplicados (para repasar)
@@ -55,11 +64,18 @@ src/app/
 |---|---|
 | `@if` / `@for` / `@empty` (control flow) | todos los templates |
 | `signal` + `computed` | `proyectos.ts`, `trayectoria.ts` |
-| `toSignal(observable)` | `footer.ts`, `home.ts` |
+| **Estado HTTP con `signal` (cargando/ok/error)** | `core/http/recurso.ts` |
+| **Sobrecargas de función para inferir tipos** | `core/http/recurso.ts` |
+| `input()` / `output()` funcionales | `estado-carga.ts` |
 | Lazy loading por ruta | `app.routes.ts` (`loadComponent`) |
 | `[(ngModel)]` + validación | `contacto.html` |
 | Inyección con `inject()` + token | `core/api-url.token.ts` |
 | Zoneless (`provideZonelessChangeDetection`) | `app.config.ts` |
+| **Meta tags dinámicas (`Meta` + `Title`)** | `core/seo/seo.service.ts` |
+| **JSON-LD (Schema.org Person)** | `src/index.html` |
+| **`@HostListener('window:scroll')`** | `shared/scroll-top/scroll-top.ts` |
+| **Accesibilidad: skip-link y `role="status"`** | `app.html`, `estado-carga.html` |
+| **`prefers-reduced-motion` (CSS)** | `styles.scss` |
 | **JWT: service + signal de sesión** | `core/auth/auth.service.ts` |
 | **Interceptor funcional (`withInterceptors`)** | `core/auth/auth.interceptor.ts` |
 | **Guard `canMatch`** | `core/auth/admin.guard.ts` |
@@ -85,3 +101,9 @@ incluye el fallback SPA (`try_files ... /index.html`) + gzip.
       login (200/401), CRUD proyectos (201+Location / 200 / 204 / 404),
       PUT perfil (200), guard redirige a /admin/login sin sesión,
       interceptor añade `Authorization`, rutas admin responden 200
+- [x] Fase 5: pulido — ✅ verificado:
+      build de producción limpio (289 kB raw / 81.5 kB transferidos,
+      sin errores ni avisos), `robots.txt` + `sitemap.xml` + `favicon.svg`
+      servidos con 200 por nginx, JSON-LD presente en el HTML,
+      las 6 rutas responden 200 (fallback SPA),
+      todos los GET públicos de la API → 200 y POST sin token → 401

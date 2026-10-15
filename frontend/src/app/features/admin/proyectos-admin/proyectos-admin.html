@@ -158,13 +158,23 @@
       <p class="vacio">No hay proyectos todavía. ¡Crea el primero!</p>
     } @else {
       <div class="tabla-wrapper">
+        <!--
+          ACCESIBILIDAD DE TABLAS (Fase 5):
+          - <caption> = título de la tabla que leen los lectores de pantalla
+            (visualmente oculto aquí, pero announce al navegar por la tabla).
+          - scope="col" en cada <th> = le dice al lector "esta celda es la
+            CABECERA de su columna", para que al leer una fila anuncie
+            "Nombre: Portfolio, Tecnologías: Angular..." en vez de solo el
+            valor suelto.
+        -->
         <table class="tabla">
+          <caption class="visually-hidden">Listado de proyectos del portfolio</caption>
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Tecnologías</th>
-              <th>Destacado</th>
-              <th class="tabla__acciones-th">Acciones</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Tecnologías</th>
+              <th scope="col">Destacado</th>
+              <th scope="col" class="tabla__acciones-th">Acciones</th>
             </tr>
           </thead>
           <tbody>

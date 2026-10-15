@@ -11,46 +11,59 @@
     [value] + (input) = "one-way down" (estado → vista) + "event up" (vista → estado):
     patrón recomendado de Angular en lugar de [(ngModel)] doble binding
     para inputs controlados por signals.
+    Solo se muestra cuando ya hay datos cargados.
   -->
-  <div class="buscador">
-    <input
-      type="search"
-      placeholder="Buscar por nombre o tecnología…"
-      [value]="filtro()"
-      (input)="filtro.set($any($event.target).value)"
-      aria-label="Buscar proyectos" />
-  </div>
-
-  <!-- Chips: atajos de filtro por tecnología -->
-  @if (tecnologias().length > 0) {
-    <div class="chips">
-      @for (tech of tecnologias(); track tech) {
-        <button
-          type="button"
-          class="chip"
-          [class.chip--activo]="filtro() === tech"
-          (click)="filtrarPorTech(tech)">
-          {{ tech }}
-        </button>
-      }
-      @if (filtro()) {
-        <button type="button" class="chip chip--limpiar" (click)="filtro.set('')">
-          ✕ Limpiar
-        </button>
-      }
+  @if (todos.estado() === 'ok') {
+    <div class="buscador">
+      <input
+        type="search"
+        placeholder="Buscar por nombre o tecnología…"
+        [value]="filtro()"
+        (input)="filtro.set($any($event.target).value)"
+        aria-label="Buscar proyectos" />
     </div>
+
+    <!-- Chips: atajos de filtro por tecnología -->
+    @if (tecnologias().length > 0) {
+      <div class="chips">
+        @for (tech of tecnologias(); track tech) {
+          <button
+            type="button"
+            class="chip"
+            [class.chip--activo]="filtro() === tech"
+            (click)="filtrarPorTech(tech)">
+            {{ tech }}
+          </button>
+        }
+        @if (filtro()) {
+          <button type="button" class="chip chip--limpiar" (click)="filtro.set('')">
+            ✕ Limpiar
+          </button>
+        }
+      </div>
+    }
   }
 
+  <!--
+    ESTADO DE CARGA / ERROR de la lista de proyectos.
+    Mientras carga → skeleton de tarjetas; si falla → aviso + "Reintentar".
+  -->
+  <app-estado-carga
+    [estado]="todos.estado()"
+    [tipo]="'tarjetas'"
+    [cantidad]="6"
+    (reintentar)="todos.recargar()" />
+
   <!-- GRID -->
-  @if (visibles().length === 0) {
+  @if (todos.estado() === 'ok' && visibles().length === 0) {
     <p class="vacio">
       @if (filtro()) {
         No hay proyectos que coincidan con "{{ filtro() }}".
       } @else {
-        Cargando proyectos…
+        Aún no hay proyectos publicados.
       }
     </p>
-  } @else {
+  } @if (todos.estado() === 'ok' && visibles().length > 0) {
     <div class="grid">
       @for (proyecto of visibles(); track proyecto.id) {
         <article class="card" [class.card--destacado]="proyecto.destacado">

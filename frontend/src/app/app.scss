@@ -3,4 +3,61 @@
 .principal {
   flex: 1;               // crece para empujar el footer hacia abajo
   min-height: 0;
+
+  /* Al recibir foco (tras el salto del skip-link), no dibujar outline
+     feo: el usuario YA sabe que está en el contenido principal. */
+  &:focus {
+    outline: none;
+  }
+
+  /* =========================================================================
+     TRANSICIÓN ENTRE RUTAS
+     =========================================================================
+     Al navegar, Angular DESTRUYE el componente viejo e INSERTA uno nuevo
+     como hijo de <main>. Como el elemento es nuevo, el navegador ejecuta
+     automáticamente su animación CSS de entrada: no hace falta JS ni el
+     módulo @angular/animations (más pesado).
+
+     La keyframe `aparecer` está definida en styles.scss (global), y quien
+     prefiera movimiento reducido queda cubierto por el bloque
+     `prefers-reduced-motion` de ese mismo fichero (WCAG 2.3.3).
+
+     NOTA: NO usamos `animation-fill-mode: both`. Con `both`, el estado final
+     (`transform: translateY(0)`) PERMANECECO después de terminar, y un
+     `transform` distinto de `none` crea un "containing block" que rompería
+     cualquier `position: fixed` de los hijos (botones flotantes, modales...).
+     Con el relleno por defecto (none), el elemento vuelve a sus estilos
+     normales al terminar.
+     ========================================================================= */
+  > * {
+    animation: aparecer 0.3s ease;
+  }
+}
+
+/* ===========================================================================
+   SKIP-LINK (enlace de salto — accesibilidad)
+   ===========================================================================
+   Es el primer elemento del DOM pero está OCULTO visualmente. Solo se
+   hace visible cuando recibe el foco del teclado (Tab). Así, quien navega
+   con teclado puede saltarse la barra de navegación sin pulsar Tab decenas
+   de veces. Quien usa el ratón NUNCA lo ve.
+   =========================================================================== */
+.skip-link {
+  position: absolute;
+  top: -100%;              // fuera de pantalla por defecto
+  left: 0.75rem;
+  z-index: 200;            // por encima del navbar (z-index 100)
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4);
+  transition: top 0.15s ease;
+
+  /* Cuando recibe foco (Tab), baja a pantalla */
+  &:focus {
+    top: 0;
+  }
 }

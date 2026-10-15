@@ -115,8 +115,12 @@
   &__grid {
     display: grid;
     // auto-fill: tantas columnas de 300px como quepan
-    // minmax(300px, 1fr): nunca menos de 300px, reparte el sobrante
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    // minmax(min(300px,100%), 1fr): nunca menos de 300px, reparte el sobrante.
+    // El `min(…, 100%)` es TRUCO CLAVE para móvil: si la pantalla (o el
+    // contenedor con su padding) mide MENOS de 300px, la columna se adapta al
+    // 100% disponible en vez de forzar 300px → se evita el scroll horizontal
+    // no deseado en dispositivos estrechos (320-360px de ancho).
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     gap: 1.25rem;
   }
 }

@@ -1,0 +1,59 @@
+<!--
+  ESTADO DE CARGA / ERROR
+  Mientras la API responde → skeleton (bloques grises animados que "simulan"
+  el contenido final: el usuario percibe que algo pasa, no un blanco).
+  Si falla → aviso claro con botón de reintento.
+-->
+@if (estado() === 'cargando') {
+  <!--
+    Texto oculto visualmente pero anunciable: `role="status"` equivale a un
+    aria-live="polite", así el lector de pantalla AVISA de que algo está
+    cargando y, cuando el contenido llega y este nodo se vacía, también
+    percibe el cambio. Sin esto, quien navega con lector de pantalla solo
+    "escucharía" un silencio (o el skeleton que marcamos aria-hidden).
+  -->
+  <span class="visually-hidden" role="status">Cargando contenido…</span>
+
+  <div [class]="'skeleton skeleton--' + tipo()" aria-hidden="true">
+    <!--
+      aria-hidden="true": el skeleton es puramente decorativo; no debe
+      leerlo el lector de pantalla (ella ya recibe "Cargando contenido…"
+      por el role="status" de arriba).
+    -->
+    @for (f of filas(); track f) {
+      @if (tipo() === 'tarjetas') {
+        <div class="skeleton__card">
+          <div class="skeleton__linea skeleton__linea--ancha"></div>
+          <div class="skeleton__linea"></div>
+          <div class="skeleton__linea skeleton__linea--corta"></div>
+        </div>
+      } @else if (tipo() === 'timeline') {
+        <div class="skeleton__item">
+          <div class="skeleton__punto"></div>
+          <div class="skeleton__linea skeleton__linea--media"></div>
+        </div>
+      } @else {
+        <div class="skeleton__linea"></div>
+      }
+    }
+  </div>
+} @else if (estado() === 'error') {
+  <!--
+    role="status" (o "alert"): avisa a los lectores de pantalla del problema.
+    El foco NO se mueve automáticamente (role="status" es menos intrusivo
+    que role="alert"), pero sí se anuncia.
+  -->
+  <div class="error-carga" role="status">
+    <span class="error-carga__icono" aria-hidden="true">⚠️</span>
+    <div class="error-carga__texto">
+      <strong>No se pudo cargar el contenido.</strong>
+      <small>Comprueba tu conexión o inténtalo de nuevo.</small>
+    </div>
+    <button
+      type="button"
+      class="error-carga__btn"
+      (click)="reintentarCarga()">
+      Reintentar
+    </button>
+  </div>
+}

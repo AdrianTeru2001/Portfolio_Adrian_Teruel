@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Adrián Teruel">
+  <!--
+    FAVICON DE MARCA (SVG)
+    ----------------------------------------------------------------------------
+    Un SVG es la forma moderna de favicon: escalable (nítido en cualquier
+    pantalla, incluidas las Retina), editable en cualquier editor de texto y
+    pesa ~1 KB (el .ico equivalente pesa 10-40 KB y se ve borroso).
+
+    Angular copia TODO lo que hay en public/ a la raíz del build (dist/),
+    así que basta con enlazarlo en index.html con <link rel="icon">.
+
+    Las iniciales "AT" usan el mismo gradiente que la marca del sitio
+    (#38bdf8 → #6366f1, ver styles.scss → --color-acento / --color-acento-2).
+  -->
+  <defs>
+    <linearGradient id="marca" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo: cuadrado con esquinas redondeadas (el "squircle" de las apps) -->
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+
+  <!-- Borde sutil para que destaque sobre pestañas claras -->
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5"
+        fill="none" stroke="url(#marca)" stroke-width="3" opacity="0.9"/>
+
+  <!-- Iniciales: tipografía bold centrada -->
+  <text x="32" y="43" text-anchor="middle"
+        font-family="Segoe UI, system-ui, -apple-system, Arial, sans-serif"
+        font-size="30" font-weight="700" fill="url(#marca)"
+        letter-spacing="-1">AT</text>
+</svg>

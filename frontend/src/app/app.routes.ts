@@ -15,24 +15,42 @@ export const routes: Routes = [
   {
     path: '',
     title: 'Inicio | Adrián Teruel',     // title cambia la pestaña del navegador (SEO básico)
+    data: {
+      // description: lo que muestra Google bajo el enlace. Es el "anuncio"
+      // de tu página: debe ser claro y con palabras clave (Java, Angular...)
+      description:
+        'Portfolio de Adrián Teruel Reina, desarrollador Full Stack Java / Spring Boot / Angular. Proyectos, trayectoria y competencias.',
+    },
     loadComponent: () =>
       import('./features/home/home').then((m) => m.Home),
   },
   {
     path: 'trayectoria',
     title: 'Trayectoria | Adrián Teruel',
+    data: {
+      description:
+        'Trayectoria académica y profesional de Adrián Teruel: estudios, experiencia laboral y competencias técnicas.',
+    },
     loadComponent: () =>
       import('./features/trayectoria/trayectoria').then((m) => m.Trayectoria),
   },
   {
     path: 'proyectos',
     title: 'Proyectos | Adrián Teruel',
+    data: {
+      description:
+        'Proyectos de Adrián Teruel: aplicaciones Full Stack desarrolladas con Java, Spring Boot, Angular y PostgreSQL.',
+    },
     loadComponent: () =>
       import('./features/proyectos/proyectos').then((m) => m.Proyectos),
   },
   {
     path: 'contacto',
     title: 'Contacto | Adrián Teruel',
+    data: {
+      description:
+        'Contacta con Adrián Teruel: formulario, email, LinkedIn y GitHub. Disponible para nuevas oportunidades profesionales.',
+    },
     loadComponent: () =>
       import('./features/contacto/contacto').then((m) => m.Contacto),
   },
@@ -53,6 +71,13 @@ export const routes: Routes = [
   {
     path: 'admin/login',
     title: 'Acceso | Admin',
+    data: {
+      // noindex: que esta página NO aparezca en Google (tampoco el formulario
+      // de acceso). Es higiene SEO + seguridad básica (security through
+      // obscurity NO es seguridad, pero menos exposición es mejor).
+      robots: 'noindex, nofollow',
+      description: 'Acceso al panel de administración del portfolio.',
+    },
     loadComponent: () =>
       import('./features/admin/login/login').then((m) => m.Login),
   },
@@ -62,6 +87,12 @@ export const routes: Routes = [
   {
     path: 'admin',
     canMatch: [adminGuard],   // ← la clave: sin sesión no entra NI se descarga
+    data: {
+      // Este `data` lo HEREDAN las rutas hijas: SeoService fusiona los data
+      // de todo el árbol, así que basta declararlo aquí una vez para que
+      // /admin, /admin/proyectos y /admin/perfil queden todas en noindex.
+      robots: 'noindex, nofollow',
+    },
     loadComponent: () =>
       import('./features/admin/layout/admin-layout')
         .then((m) => m.AdminLayout),

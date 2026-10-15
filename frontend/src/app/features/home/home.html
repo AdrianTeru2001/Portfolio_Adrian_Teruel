@@ -5,10 +5,10 @@
 <section class="hero">
   <div class="hero__contenido">
     <p class="hero__saludo">¡Hola! 👋 Soy</p>
-    <h1 class="hero__nombre">{{ perfil()?.nombre ?? 'Adrián Teruel' }}</h1>
-    <h2 class="hero__titulo">{{ perfil()?.tituloProfesional ?? 'Desarrollador Full Stack' }}</h2>
+    <h1 class="hero__nombre">{{ perfil.datos()?.nombre ?? 'Adrián Teruel' }}</h1>
+    <h2 class="hero__titulo">{{ perfil.datos()?.tituloProfesional ?? 'Desarrollador Full Stack' }}</h2>
 
-    <p class="hero__bio">{{ perfil()?.bio }}</p>
+    <p class="hero__bio">{{ perfil.datos()?.bio }}</p>
 
     <!--
       [routerLink] = binding: el valor se evalúa en TS.
@@ -21,13 +21,13 @@
 
     <!-- Enlaces rápidos con datos del perfil (solo si existen) -->
     <div class="hero__redes">
-      @if (perfil()?.githubUrl; as github) {
+      @if (perfil.datos()?.githubUrl; as github) {
         <a [href]="github" target="_blank" rel="noopener">GitHub ↗</a>
       }
-      @if (perfil()?.linkedinUrl; as linkedin) {
+      @if (perfil.datos()?.linkedinUrl; as linkedin) {
         <a [href]="linkedin" target="_blank" rel="noopener">LinkedIn ↗</a>
       }
-      @if (perfil()?.ubicacion; as ubicacion) {
+      @if (perfil.datos()?.ubicacion; as ubicacion) {
         <span class="hero__ubicacion">📍 {{ ubicacion }}</span>
       }
     </div>
@@ -42,15 +42,26 @@
   </div>
 
   <!--
+    Estado de carga: el componente compartido pinta el skeleton mientras
+    carga, el aviso + "Reintentar" si falla, y nada si todo va bien
+    (estado 'ok' → no pinta nada y dejamos paso a la lista de abajo).
+  -->
+  <app-estado-carga
+    [estado]="destacados.estado()"
+    [tipo]="'tarjetas'"
+    [cantidad]="3"
+    (reintentar)="destacados.recargar()" />
+
+  <!--
     @if / @for = control flow de Angular 14+ (en vez de *ngIf/*ngFor):
     compila más rápido y no necesita módulos extra.
     track = le dice a Angular qué fila cambió (diffing eficiente).
   -->
-  @if (destacados().length === 0) {
-    <p class="vacio">Cargando proyectos…</p>
-  } @else {
+  @if (destacados.estado() === 'ok' && destacados.datos().length === 0) {
+    <p class="vacio">Aún no hay proyectos destacados.</p>
+  } @if (destacados.estado() === 'ok' && destacados.datos().length > 0) {
     <div class="destacados__grid">
-      @for (proyecto of destacados(); track proyecto.id) {
+      @for (proyecto of destacados.datos(); track proyecto.id) {
         <article class="card">
           <div class="card__body">
             <h3 class="card__titulo">{{ proyecto.nombre }}</h3>

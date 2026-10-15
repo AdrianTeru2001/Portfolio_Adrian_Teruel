@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { PerfilService } from '../../core/services/perfil.service';
 import { ContactoService } from '../../core/services/contacto.service';
-import { MensajeContactoRequest } from '../../core/models/portfolio.models';
+import { recurso } from '../../core/http/recurso';
+import { MensajeContactoRequest, Perfil } from '../../core/models/portfolio.models';
 
 /**
  * PÁGINA: Contacto (formulario).
@@ -34,7 +34,8 @@ export class Contacto {
   private perfilService = inject(PerfilService);
   private contactoService = inject(ContactoService);
 
-  perfil = toSignal(this.perfilService.getPerfil(), { initialValue: null });
+  // Datos de contacto del perfil (recurso con estado, tolerante a fallos)
+  perfil = recurso<Perfil>(() => this.perfilService.getPerfil());
 
   /** Modelo enlazado con [(ngModel)] — dos vías de datos. */
   mensaje: MensajeContactoRequest = { nombre: '', email: '', contenido: '' };

@@ -121,9 +121,25 @@ curl -X POST http://localhost:8080/api/proyectos \
 - [x] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
 - [x] **Fase 3** — Frontend: páginas públicas consumiendo la API (Angular 21, signals, lazy loading, Docker/nginx)
 - [x] **Fase 4** — Admin: guard, interceptor, login JWT y CRUD de proyectos + edición de perfil
-- [ ] **Fase 5** — Pulido: diseño, responsive, SEO básico
+- [x] **Fase 5** — Pulido: estados de carga/error, SEO estructurado, accesibilidad, detalles UX
 - [ ] **Fase 6** — Tests (JUnit + Mockito / specs de Angular)
 - [ ] **Fase 7** — Despliegue real + CI/CD (Render + Vercel)
+
+### Detalle de la Fase 5 (pulido)
+
+| Área | Qué se hizo | Dónde |
+|------|-------------|-------|
+| **Robustez UX** | Patrón `recurso()` → cada petición expone `cargando / ok / error` + `recargar()`. Antes, si la API caía, la web se quedaba en "Cargando…" eterno sin aviso. | `frontend/src/app/core/http/recurso.ts` |
+| **Skeletons** | Componente reutilizable `<app-estado-carga>` con *skeleton screens* (bloques con brillo viajero) mientras carga y aviso + botón **Reintentar** si falla. | `frontend/src/app/shared/estado-carga/` |
+| **SEO estructurado** | JSON-LD (Schema.org `Person`) con tus datos reales y enlaces a LinkedIn/GitHub → puede desencadenar la "ficha de persona" en Google. | `frontend/src/index.html` |
+| **Meta tags por ruta** | `SeoService` que al navegar actualiza `<title>`, `description` y `og:title/og:description` (una SPA sirve el mismo HTML para todas las rutas, hay que actualizarlo con JS). | `frontend/src/app/core/seo/seo.service.ts` |
+| **Rastreo** | `robots.txt` (con `Disallow: /admin`) y `sitemap.xml` con las 4 páginas públicas. | `frontend/public/` |
+| **noindex admin** | El área `/admin` declara `data: { robots: 'noindex' }` → no aparece en buscadores. Se fusiona el `data` de todo el árbol de rutas. | `frontend/src/app/app.routes.ts` |
+| **Accesibilidad** | *Skip-link* ("Saltar al contenido"), `scope="col"` + `<caption>` en la tabla admin, clase `.visually-hidden`, anuncio `role="status"` en cargas. | `app.html`, tablas, `styles.scss` |
+| **Transición de rutas** | Animación de entrada CSS al cambiar de página (sin módulo `@angular/animations`), respetando `prefers-reduced-motion`. | `frontend/src/app/app.scss` |
+| **Botón "volver arriba"** | Flotante que aparece tras bajar ~400 px, con `@HostListener('window:scroll')`. | `frontend/src/app/shared/scroll-top/` |
+| **Favicon de marca** | SVG con las iniciales **AT** y el gradiente de la marca (~1 KB, nítido en Retina) en vez del `.ico` por defecto. | `frontend/public/favicon.svg` |
+| **Responsive** | Corregido un *overflow horizontal* real en pantallas de 320-360 px: `minmax(300px,1fr)` → `minmax(min(300px,100%),1fr)` en los 4 grids. | `home`, `proyectos`, `trayectoria`, `estado-carga` |
 
 ---
 
