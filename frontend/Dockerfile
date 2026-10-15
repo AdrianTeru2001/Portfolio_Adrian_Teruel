@@ -21,9 +21,13 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copiamos SOLO package*.json primero → capa de caché de Docker:
-# si solo cambia código TS, npm install NO se repite (ver Dockerfile backend)
-COPY package*.json ./
+# Copiamos SOLO package*.json + .npmrc primero → capa de caché de Docker:
+# si solo cambia código TS, npm install NO se repite (ver Dockerfile backend).
+# El .npmrc DEBE estar aquí antes de `npm ci`: npm debe usar la MISMA
+# configuración con la que se generó el lock (legacy-peer-deps esquiva el
+# bug de npm 10 al resolver peers; sin él el contenedor "resuelve" un árbol
+# distinto y npm ci falla con "package.json and lock are in sync").
+COPY package*.json .npmrc ./
 RUN npm ci
 #    ^ "npm ci" = instalación LIMPIA y REPETIBLE a partir del package-lock.json
 #      (npm install puede variar versiones según cuándo se ejecute; en CI/CD
