@@ -105,8 +105,18 @@ export class AuthService {
       return null;
     }
     const token = localStorage.getItem(this.CLAVE);
-    // Si el token ya caducó, lo descartamos (ahorramos un 401 inútil)
-    return token && !this.estaCaducado(token) ? token : null;
+    if (!token) {
+      return null;
+    }
+    // Si el token ya caducó, lo descartamos (ahorramos un 401 inútil)...
+    if (this.estaCaducado(token)) {
+      // ...y lo BORRAMOS: no tiene sentido re-leer la misma basura en cada
+      // recarga de la página (y así el estado del almacenamiento refleja
+      // siempre la realidad). Descubierto por un test (Fase 6).
+      localStorage.removeItem(this.CLAVE);
+      return null;
+    }
+    return token;
   }
 
   private guardarToken(token: string): void {

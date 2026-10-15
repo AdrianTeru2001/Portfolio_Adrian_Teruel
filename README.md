@@ -122,7 +122,7 @@ curl -X POST http://localhost:8080/api/proyectos \
 - [x] **Fase 3** — Frontend: páginas públicas consumiendo la API (Angular 21, signals, lazy loading, Docker/nginx)
 - [x] **Fase 4** — Admin: guard, interceptor, login JWT y CRUD de proyectos + edición de perfil
 - [x] **Fase 5** — Pulido: estados de carga/error, SEO estructurado, accesibilidad, detalles UX
-- [ ] **Fase 6** — Tests (JUnit + Mockito / specs de Angular)
+- [x] **Fase 6** — Tests: 29 en el backend (JUnit + Mockito + `@WebMvcTest`) y 31 en el frontend (Vitest + TestBed)
 - [ ] **Fase 7** — Despliegue real + CI/CD (Render + Vercel)
 
 ### Detalle de la Fase 5 (pulido)
@@ -140,6 +140,42 @@ curl -X POST http://localhost:8080/api/proyectos \
 | **Botón "volver arriba"** | Flotante que aparece tras bajar ~400 px, con `@HostListener('window:scroll')`. | `frontend/src/app/shared/scroll-top/` |
 | **Favicon de marca** | SVG con las iniciales **AT** y el gradiente de la marca (~1 KB, nítido en Retina) en vez del `.ico` por defecto. | `frontend/public/favicon.svg` |
 | **Responsive** | Corregido un *overflow horizontal* real en pantallas de 320-360 px: `minmax(300px,1fr)` → `minmax(min(300px,100%),1fr)` en los 4 grids. | `home`, `proyectos`, `trayectoria`, `estado-carga` |
+
+### Detalle de la Fase 6 (tests)
+
+**Cómo se ejecutan:**
+
+```bash
+# Backend (29 tests) — JUnit 6 + Mockito 5 + AssertJ. Los @WebMvcTest NO necesitan BD.
+cd backend && ./mvnw clean test
+
+# Frontend (31 tests) — Vitest con entorno jsdom (sin navegador).
+# Ojo: en terminal interactiva queda en modo watch (pulsa q para salir).
+cd frontend && npx ng test
+```
+
+| Suite | Qué cubre | Dónde |
+|-------|-----------|-------|
+| **`JwtServiceTest`** (6) | Round-trip del token, rechazo de tokens basura, **firmados con otro secreto**, **caducados** y secreto < 32 chars. | `backend/src/test/.../security/` |
+| **`UsuarioAdminDetailsServiceTest`** (3) | Devuelve `ROLE_ADMIN`, usuario inexistente y usuario **deshabilitado**. | `backend/src/test/.../security/` |
+| **`ProyectoServiceTest`** (6) | Mapeo DTO↔entidad con `ArgumentCaptor`, 404 y que `DELETE` **nunca borra a ciegas**. Mockito puro (milisegundos). | `backend/src/test/.../service/` |
+| **`ProyectoControllerTest`** (10) | `@WebMvcTest` + seguridad real: GET público sin token, POST 401/201, validación 400, JSON roto 400, 415, y **deny-by-default** (rutas no listadas → 401). | `backend/src/test/.../controller/` |
+| **`AuthControllerTest`** (3) | Login 200 + token, 401 con mensaje genérico (no filtra si el usuario existe), 400 por campos vacíos. | `backend/src/test/.../controller/` |
+| **`recurso.spec.ts`** (5) | El patrón de estado: `cargando → ok/error`, valor inicial conservado y `recargar()`. | `frontend/src/app/core/http/` |
+| **`auth.service.spec.ts`** (6) | Login/logout, token persistido (sobrevive F5) y **descarte de tokens caducados**. | `frontend/src/app/core/auth/` |
+| **`admin.guard.spec.ts`** (3) | Deja entrar con sesión; redirige al login sin sesión o con token caducado. | `frontend/src/app/core/auth/` |
+| **`auth.interceptor.spec.ts`** (6) | Añade `Authorization` solo a nuestra API; el 401 cierra sesión **excepto en el login** y en dominios externos. | `frontend/src/app/core/auth/` |
+| **`estado-carga.spec.ts`** (6) | Skeleton por tipo/cantidad, aviso de error, emisión de `reintentar` y estado `ok` limpio. | `frontend/src/app/shared/estado-carga/` |
+| **`seo.service.spec.ts`** (5) | Meta tags por ruta, **herencia de `robots noindex` de padre a hijo** y su restauración al volver a lo público. | `frontend/src/app/core/seo/` |
+
+**Bugs reales encontrados (y corregidos) por estos tests:**
+
+| Bug | Antes | Después |
+|-----|-------|---------|
+| Un `POST/PUT` **sin el campo `destacado`** (boolean primitivo) reventaba en Jackson con `FAIL_ON_NULL_FOR_PRIMITIVES` | `500` (parecía fallo del servidor) | `400` con detalle de validación / `201` si es válido |
+| Un **JSON ilegible** (truncado) o un `Content-Type` no soportado caía al handler genérico | `500` | `400 "JSON inválido o incompleto"` / `415` |
+| `og:title` se quedaba siempre en el valor por defecto: el `title:` de la ruta vive en un campo propio del snapshot, **no en `data`** | `og:title = "Adrián Teruel"` en todas las páginas | `og:title` con el título real de cada página |
+| Un token JWT **caducado** seguía en `localStorage` tras el arranque (se re-leía en cada recarga) | basura persistente | se borra al detectarlo |
 
 ---
 

@@ -94,3 +94,4 @@ cd backend
 - [x] Fase 0: carpeta y documentación creadas
 - [x] Fase 1: proyecto Spring Boot, entidades, Flyway, CRUD — ✅ API verificada (CRUD completo, validación 400, 404, tests en verde)
 - [x] Fase 2: Spring Security + JWT — ✅ verificado: login (401 con credenciales mal), token firmado, POST/PUT/DELETE exigen `Bearer` (401 sin token / token falsificado), GET públicos abiertos, tests en verde
+- [x] Fase 6: tests — ✅ `./mvnw clean test` → **29/29 en verde** (JUnit 6 + Mockito 5 + `@WebMvcTest` con la seguridad real montada). Los tests encontraron y se corrigieron 2 bugs de producción: un POST/PUT sin el campo `destacado` respondía **500** (Jackson + `FAIL_ON_NULL_FOR_PRIMITIVES` en Spring Boot 4) y un JSON ilegible o un `Content-Type` no soportado también caía a **500** en vez de 400/415

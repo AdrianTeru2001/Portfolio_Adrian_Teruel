@@ -88,6 +88,37 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 400: el body JSON no se pudo PARSEAR (JSON roto, vacío, o un `null`
+     * donde se esperaba un primitivo...).
+     *
+     * <p>Esto ocurre ANTES de la validación de campos: si no lo capturamos
+     * aquí, caería en el handler genérico de Exception y el cliente
+     * recibiría un 500 (como si hubiéramos roto el servidor), cuando en
+     * realidad el problema es su petición. Descubierto por un test (Fase 6).</p>
+     */
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> jsonInvalido(
+            org.springframework.http.converter.HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
+        // Mensaje genérico: el detalle del parse (a veces con tipos internos
+        // del JSON) no aporta nada al cliente y puede filtrar información.
+        return construir(HttpStatus.BAD_REQUEST,
+                "JSON inválido o incompleto", request);
+    }
+
+    /**
+     * 415: el cliente envió un Content-Type que no sabemos deserializar
+     * (p. ej. text/plain donde esperamos application/json).
+     */
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> tipoNoSoportado(
+            org.springframework.web.HttpMediaTypeNotSupportedException ex,
+            HttpServletRequest request) {
+        return construir(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                "Tipo de contenido no soportado: usa application/json", request);
+    }
+
+    /**
      * 500: cualquier error no previsto.
      *
      * <b>Importante:</b> NO devolvemos ex.getMessage() al cliente si podría

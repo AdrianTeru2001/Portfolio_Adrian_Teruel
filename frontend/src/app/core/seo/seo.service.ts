@@ -70,9 +70,23 @@ export class SeoService {
         map(() => {
           const fusionado: Record<string, unknown> = {};
           let ruta: ActivatedRoute | null = this.rutaActual;
+          let tituloDeRuta: string | undefined;
           while (ruta) {
             Object.assign(fusionado, ruta.snapshot.data);
+            // ATENCIÓN: el `title:` que declaramos en app.routes.ts NO va en
+            // `data` — es un campo PROPIO del snapshot (ActivatedRouteSnapshot,
+            // desde Angular 14.1). Sin este guardián, meta.title sería
+            // undefined SIEMPRE y og:title caería en el valor por defecto
+            // aunque cada ruta tuviera su título. Descubierto por un test
+            // (Fase 6): se ve al compartir la web en redes sociales.
+            if (ruta.snapshot.title) {
+              tituloDeRuta = ruta.snapshot.title;
+            }
             ruta = ruta.firstChild;
+          }
+          // data: { title } explícito tendría prioridad sobre title: de ruta
+          if (typeof fusionado['title'] !== 'string' && tituloDeRuta) {
+            fusionado['title'] = tituloDeRuta;
           }
           return fusionado;
         }),

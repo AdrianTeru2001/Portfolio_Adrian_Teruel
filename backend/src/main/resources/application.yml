@@ -16,6 +16,18 @@ spring:
   application:
     name: portfolio-backend   # nombre que aparece en logs y en /actuator
 
+  # --- Jackson (deserialización JSON) ---
+  jackson:
+    deserialization:
+      # PRIMITIVOS (boolean/int/long) con null → usar el valor por defecto
+      # en vez de reventar.
+      # Por qué: si un cliente manda {"nombre":"x"} SIN el campo "destacado"
+      # (primitivo boolean), Jackson recibiría null para un boolean. Con la
+      # configuración por defecto de Spring Boot 4 eso lanza
+      # HttpMessageNotReadableException → un feo 500. Con false, se usa el
+      # default de Java (false) y la validación @Valid posterior puede actuar.
+      fail-on-null-for-primitives: false
+
   # --- Conexión a la base de datos ---
   datasource:
     # JDBC = protocolo estándar de Java para hablar con BBDD relacionales.

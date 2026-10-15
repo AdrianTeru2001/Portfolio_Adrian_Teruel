@@ -14,6 +14,7 @@ cd frontend
 npm install        # solo la primera vez o si cambia package.json
 npm start          # ng serve → http://localhost:4200 (recarga en caliente)
 npm run build      # build producción → dist/frontend/browser
+npm test           # ng test → Vitest (watch: q para salir, r para reejecutar)
 ```
 
 ## Estructura (patrón por features)
@@ -82,6 +83,34 @@ frontend/public/                   # se copia tal cual a dist/ (sin compilar)
 | **Rutas anidadas + lazy loading** | `app.routes.ts` (bloque `/admin`) |
 | **CRUD con mutación local de signals** | `proyectos-admin.ts` |
 
+## Tests (Fase 6 — Vitest)
+
+El proyecto se generó con `--skip-tests`, así que la infraestructura se
+añadió a mano en la Fase 6:
+
+- **Runner**: [Vitest](https://vitest.dev/) vía el builder
+  `@angular/build:unit-test` (Karma está deprecado desde Angular 20).
+  Corre en **Node + jsdom** (DOM falso en memoria): sin navegador y en ~3 s.
+- **Config**: target `test` en `angular.json` + `tsconfig.spec.json`.
+  Los `*.spec.ts` se importan explícitos de `'vitest'`
+  (`describe/it/expect/beforeEach/vi`), sin globals.
+- **Instalación** (hecha una vez): `npm i -D vitest jsdom --legacy-peer-deps`
+  — el flag esquivó un bug de npm 10 (`edgesOut`) al resolver peers.
+
+**Suite actual: 31 tests en 6 ficheros** (`src/**/*.spec.ts`):
+
+| Spec | Cubre |
+|------|-------|
+| `core/http/recurso.spec.ts` | estados `cargando/ok/error`, valor inicial, `recargar()` |
+| `core/auth/auth.service.spec.ts` | login/logout, persistencia del token, caducidad |
+| `core/auth/admin.guard.spec.ts` | redirección al login sin sesión o con token caducado |
+| `core/auth/auth.interceptor.spec.ts` | cabecera `Authorization`, 401 → logout (con excepciones) |
+| `shared/estado-carga/estado-carga.spec.ts` | skeleton, aviso de error, emisión de `reintentar` |
+| `core/seo/seo.service.spec.ts` | meta tags por ruta, herencia `noindex`, restauración |
+
+En `angular.json`, `schematics.skipTests` pasó a `false`: los componentes
+que generes a partir de ahora (`ng g c ...`) traerán su `*.spec.ts`.
+
 ## Docker
 
 ```bash
@@ -107,3 +136,9 @@ incluye el fallback SPA (`try_files ... /index.html`) + gzip.
       servidos con 200 por nginx, JSON-LD presente en el HTML,
       las 6 rutas responden 200 (fallback SPA),
       todos los GET públicos de la API → 200 y POST sin token → 401
+- [x] Fase 6: tests — ✅ verificado:
+      `ng test` → **31/31 en verde** (6 ficheros, ~3 s),
+      `ng build` de producción limpio,
+      además se corrigieron 2 bugs reales que los tests detectaron
+      (`og:title` siempre en el valor por defecto y token caducado
+      que no se limpiaba de localStorage)
