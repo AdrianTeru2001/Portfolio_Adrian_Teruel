@@ -1,0 +1,140 @@
+/* ===========================================================================
+   NAVBAR — SCSS con anidamiento (compila a CSS convencional)
+   =========================================================================== */
+
+.navbar {
+  position: sticky;              // se queda "pegado" al hacer scroll
+  top: 0;
+  z-index: 100;                  // por encima del resto del contenido
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);   // efecto cristal esmerilado
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+
+  &__contenido {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__marca {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: #f1f5f9;
+    font-weight: 700;
+  }
+
+  &__inicial {
+    // Iniciales en un "avatar" circular con degradado
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  &__nombre {
+    font-size: 1.05rem;
+
+    @media (max-width: 480px) {
+      display: none;            // en pantallas muy pequeñas solo el avatar
+    }
+  }
+
+  &__toggle {
+    // Solo se muestra en móvil (ver media query más abajo)
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+  }
+
+  &__barra {
+    width: 24px;
+    height: 2px;
+    background: #e2e8f0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+
+    // Estado "X" del menú abierto
+    &.es-x:first-child { transform: translateY(7px) rotate(45deg); }
+    &.es-x:last-child  { transform: translateY(-7px) rotate(-45deg); }
+    &.oculta           { opacity: 0; }
+  }
+
+  &__enlaces {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+
+    a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+
+      &:hover,
+      &.activo {
+        color: #38bdf8;
+      }
+    }
+  }
+
+  // CTA = Call To Action: botón destacado
+  &__cta {
+    padding: 0.45rem 1rem;
+    border: 1px solid #38bdf8;
+    border-radius: 999px;
+    color: #38bdf8 !important;
+
+    &:hover {
+      background: #38bdf8;
+      color: #0f172a !important;
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // RESPONSIVE: de 768px para abajo, menú hamburguesa
+  // ---------------------------------------------------------------------
+  @media (max-width: 768px) {
+    &__toggle { display: flex; }
+
+    &__enlaces {
+      // absolute: se despliega sobre el contenido
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      max-height: 0;                        // oculto
+      overflow: hidden;
+      transition: max-height 0.3s ease;     // animación al abrir
+
+      &.abierto { max-height: 320px; }      // abierto
+
+      a {
+        padding: 0.9rem 1.25rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+      }
+    }
+
+    &__cta {
+      margin: 0.75rem 1.25rem;
+      text-align: center;
+    }
+  }
+}

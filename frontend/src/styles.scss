@@ -1,0 +1,103 @@
+/* ===========================================================================
+   ESTILOS GLOBALES (styles.scss)
+   Se aplican a TODA la aplicación (Angular los inyecta en index.html).
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. CUSTOM PROPERTIES (variables CSS)
+   El tema entero se define aquí: cambiar el "tema" = tocar solo estas líneas.
+   --------------------------------------------------------------------------- */
+:root {
+  --color-fondo: #0f172a;
+  --color-superficie: #1e293b;
+  --color-texto: #f1f5f9;
+  --color-texto-suave: #94a3b8;
+  --color-acento: #38bdf8;
+  --color-acento-2: #6366f1;
+
+  // tipografía del sistema: cero descargas, carga instantánea
+  --fuente: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue',
+            Arial, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   2. RESET SUAVE
+   No hace falta una librería (normalize.css): esto cubre lo esencial para
+   que los navegadores pinten igual (márgenes por defecto, tamaños de fuente
+   heredados en inputs...).
+   --------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;   // padding NO agranda el elemento (incluye en width)
+}
+
+html {
+  // smooth scroll: anima el salto al hacer clic en anclas internas
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+  // flex column de altura completa: el footer queda abajo del todo
+  // aunque el contenido sea corto (ver app.scss)
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;   // texto más nítido en pantallas HiDPI
+}
+
+/* Los componentes de Angular encapsulan sus estilos (ViewEncapsulation),
+   pero esto aplica a cualquier <img> de todas las páginas */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Foco visible por ACCESIBILIDAD (navegación con teclado):
+   nunca elimines el outline sin ofrecer una alternativa */
+:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 2px;
+}
+
+/* Selección de texto con el color del acento (detalle de branding) */
+::selection {
+  background: rgba(56, 189, 248, 0.35);
+  color: #fff;
+}
+
+/* Barra de scroll a tono con el tema (Firefox + modernos) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   3. UTILIDADES BÁSICAS
+   --------------------------------------------------------------------------- */
+h1, h2, h3, h4 {
+  line-height: 1.25;
+}
+
+/* Animación de aparición para el contenido cargado */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respeto por quien tiene preferencia de movimiento reducido
+   (accesibilidad: el WCAG 2.3.3 lo recomienda) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

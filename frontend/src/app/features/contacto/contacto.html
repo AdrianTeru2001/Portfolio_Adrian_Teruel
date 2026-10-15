@@ -1,0 +1,132 @@
+<!--
+  PÁGINA CONTACTO
+  #form="ngForm" → exporta la instancia de NgForm para leer form.valid
+  [(ngModel)] → dos vías: el input ES el objeto this.mensaje y viceversa
+-->
+<section class="seccion">
+  <h1 class="seccion__titulo">Contacto</h1>
+  <p class="seccion__sub">
+    ¿Tienes una propuesta o solo quieres saludar? Escríbeme.
+  </p>
+
+  <div class="contacto">
+    <!-- ==================== FORMULARIO ==================== -->
+    <form #form="ngForm" (ngSubmit)="enviar()" class="formulario" novalidate>
+      <div class="campo">
+        <label for="nombre">Nombre *</label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          required
+          minlength="2"
+          maxlength="100"
+          [(ngModel)]="mensaje.nombre"
+          #nombreCtrl="ngModel"
+          placeholder="Tu nombre" />
+        <!--
+          Mensaje de validación solo cuando el campo "tocado" y inválido:
+          nombreCtrl.touched && nombreCtrl.invalid
+          && = and en template; doble negación !! convierte a boolean
+        -->
+        @if (nombreCtrl.touched && nombreCtrl.invalid) {
+          <small class="error">Mínimo 2 caracteres.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="email">Email *</label>
+        <!--
+          "email" (sin comillas) es una directiva de validación de Angular:
+          comprueba el formato del email además de required.
+        -->
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          email
+          [(ngModel)]="mensaje.email"
+          #emailCtrl="ngModel"
+          placeholder="tu@email.com" />
+        @if (emailCtrl.touched && emailCtrl.invalid) {
+          <small class="error">Introduce un email válido.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="contenido">Mensaje * (máx. 5000 caracteres)</label>
+        <textarea
+          id="contenido"
+          name="contenido"
+          rows="6"
+          required
+          maxlength="5000"
+          [(ngModel)]="mensaje.contenido"
+          #contenidoCtrl="ngModel"
+          placeholder="Cuéntame en qué puedo ayudarte…"></textarea>
+        <small class="contador">{{ mensaje.contenido.length }}/5000</small>
+        @if (contenidoCtrl.touched && contenidoCtrl.invalid) {
+          <small class="error">El mensaje no puede estar vacío.</small>
+        }
+      </div>
+
+      <!--
+        [disabled] = binding: el botón se deshabilita si el form es inválido
+        o si ya se está enviando.
+      -->
+      <button
+        type="submit"
+        class="btn btn--primario"
+        [disabled]="form.invalid || estado() === 'enviando'">
+        @if (estado() === 'enviando') {
+          Enviando…
+        } @else {
+          Enviar mensaje
+        }
+      </button>
+
+      <!-- Mensajes de éxito / error del envío -->
+      @if (estado() === 'exito') {
+        <p class="aviso aviso--ok">
+          ✅ Mensaje enviado. ¡Gracias! Te responderé pronto.
+        </p>
+      }
+      @if (estado() === 'error') {
+        <p class="aviso aviso--mal">
+          ❌ No se pudo enviar. Inténtalo de nuevo o escríbeme por email.
+        </p>
+      }
+    </form>
+
+    <!-- ==================== DATOS DIRECTOS ==================== -->
+    <aside class="datos">
+      <h2>Otras vías</h2>
+
+      @if (perfil()?.email; as email) {
+        <div class="datos__item">
+          <span class="datos__label">Email</span>
+          <a [href]="'mailto:' + email">{{ email }}</a>
+        </div>
+      }
+      @if (perfil()?.linkedinUrl; as linkedin) {
+        <div class="datos__item">
+          <span class="datos__label">LinkedIn</span>
+          <a [href]="linkedin" target="_blank" rel="noopener">Ver perfil ↗</a>
+        </div>
+      }
+      @if (perfil()?.githubUrl; as github) {
+        <div class="datos__item">
+          <span class="datos__label">GitHub</span>
+          <a [href]="github" target="_blank" rel="noopener">Ver proyectos ↗</a>
+        </div>
+      }
+      @if (perfil()?.ubicacion; as ubicacion) {
+        <div class="datos__item">
+          <span class="datos__label">Ubicación</span>
+          <span>📍 {{ ubicacion }}</span>
+        </div>
+      }
+    </aside>
+  </div>
+</section>

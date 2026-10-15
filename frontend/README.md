@@ -1,95 +1,68 @@
 # 🅰️ `frontend/` — SPA con Angular
 
-> Esta carpeta está **aún vacía de código**: se rellenará en la **Fase 3**.
-> Este README explica qué va a vivir aquí y por qué.
+Proyecto **Angular 21** (standalone components + signals + zoneless) consumiendo
+la API REST del `backend/`.
 
----
-
-## ¿Qué es Angular y por qué lo usamos?
-
-**Angular** es un framework de Google para construir **SPA** (*Single Page
-Application*): el navegador carga UNA sola página HTML y a partir de ahí
-JavaScript cambia el contenido al navegar, sin recargar. Eso significa que la
-mayoría de las llamadas a nuestra API son asíncronas (`fetch`/`HttpClient`).
-
-| Concepto | Explicación breve |
-|---|---|
-| **Componente** | Pieza de UI con su HTML + CSS + TS (ej: `tarjeta-proyecto.component.ts`) |
-| **Servicio** | Clase con lógica reutilizable, normalmente para llamar a la API (`ProyectoService`). Se inyecta con `inject()` o constructor |
-| **Módulo / Standalone** | Agrupaciones de componentes. Angular 17+ usa componentes *standalone* (sin NgModules) |
-| **Routing** | `app.routes.ts` mapea URL → componente (`/proyectos` → `ListaProyectosPage`) |
-| **Guard** | Función que intercepta navegaciones (la usaremos para proteger `/admin`) |
-| **Interceptor** | Hook en cada petición HTTP (la usaremos para añadir el `Authorization: Bearer <token>`) |
-| **Signals** | Sistema reactivo moderno de Angular: actualiza la vista cuando cambia un estado |
-
----
-
-## Estructura prevista
-
-```
-frontend/
-├── Dockerfile                # multi-stage: compila con Node, sirve con nginx (Fase 3)
-├── angular.json              # configuración del CLI de Angular
-├── package.json              # dependencias npm (el "pom.xml" de Node)
-└── src/
-    ├── index.html            # la única página HTML que carga el navegador
-    ├── main.ts               # punto de arranque de la app
-    └── app/
-        ├── app.component.*   # raíz (contiene <router-outlet/>)
-        ├── app.routes.ts     # definición de rutas
-        ├── core/             # servicios, interceptors, guards (singletones)
-        │   ├── auth/
-        │   └── services/     # PerfilService, ProyectoService...
-        ├── features/
-        │   ├── public/       # home, sobre-mi, trayectoria, proyectos, contacto
-        │   └── admin/        # login + CRUDs (protegido por guard)
-        └── shared/           # componentes reutilizables (navbar, footer, tarjeta)
-```
-
-**Patrón por feature (carpeta por funcionalidad):** en vez de agrupar por tipo
-(`components/`, `services/`), agrupamos por *área de negocio*. Así, si un día
-borras la sección de contacto, borras una carpeta y ya está.
-
----
-
-## Comandos que usaremos
+## Comandos
 
 ```bash
 cd frontend
 
-# Crear el proyecto (solo una vez, Fase 3)
-npm install -g @angular/cli        # CLI global (o usar npx)
-ng new frontend --style=scss --routing --standalone
+# ⚠️ Este proyecto necesita Node ≥ 20.19 (recomendado 22)
+#    Con fnm:   eval "$(fnm env)" && fnm use 22
 
-# Arrancar en local con recarga en caliente
-ng serve          # → http://localhost:4200
-
-# Build de producción (optimizado, minificado)
-ng build --configuration production   # → salida en dist/
-
-# Tests
-ng test           # Karma + Jasmine
+npm install        # solo la primera vez o si cambia package.json
+npm start          # ng serve → http://localhost:4200 (recarga en caliente)
+npm run build      # build producción → dist/frontend/browser
 ```
 
----
-
-## Relación con el backend
+## Estructura (patrón por features)
 
 ```
-  Angular (localhost:4200)  ──HTTP/JSON──►  Spring Boot (localhost:8080)
-        SPA                                        API REST
-   solo pinta UI                          valida, persiste, expone datos
+src/app/
+├── app.ts / app.html / app.scss   # shell: navbar + <router-outlet/> + footer
+├── app.routes.ts                  # rutas con LAZY LOADING (loadComponent)
+├── app.config.ts                  # providers: router, http, signals
+├── core/                          # "lo que no es UI"
+│   ├── api-url.token.ts           # InjectionToken de la URL de la API
+│   ├── models/portfolio.models.ts # interfaces TS = espejo de los DTOs Java
+│   └── services/                  # HttpClient → Observables tipados
+├── shared/                        # componentes reutilizables
+│   ├── navbar/                    # menú responsive con signal
+│   └── footer/                    # demo de toSignal()
+└── features/                      # una carpeta por página
+    ├── home/                      # hero + destacados
+    ├── trayectoria/               # timeline + competencias (computed)
+    ├── proyectos/                 # buscador + chips (filtro en cliente)
+    ├── contacto/                  # formulario con validación (ngModel)
+    └── no-encontrado/             # 404
 ```
 
-- El frontend **NUNCA** toca la base de datos directamente: todo pasa por la API.
-- Esa separación (front != back) permite: cambiar el frontend sin tocar la API,
-  exponer la misma API a una app móvil futura, y aplicar seguridad (JWT) en un
-  único punto.
+## Conceptos clave aplicados (para repasar)
 
----
+| Concepto | Dónde |
+|---|---|
+| `@if` / `@for` / `@empty` (control flow) | todos los templates |
+| `signal` + `computed` | `proyectos.ts`, `trayectoria.ts` |
+| `toSignal(observable)` | `footer.ts`, `home.ts` |
+| Lazy loading por ruta | `app.routes.ts` (`loadComponent`) |
+| `[(ngModel)]` + validación | `contacto.html` |
+| Inyección con `inject()` + token | `core/api-url.token.ts` |
+| Zoneless (`provideZonelessChangeDetection`) | `app.config.ts` |
+
+## Docker
+
+```bash
+docker compose up -d --build   # desde la raíz: nginx sirve dist/ en :4200
+```
+
+El `Dockerfile` es multi-stage (node:22 compila → nginx sirve) y `nginx.conf`
+incluye el fallback SPA (`try_files ... /index.html`) + gzip.
 
 ## Estado
 
 - [x] Fase 0: carpeta y documentación creadas
-- [ ] Fase 3: proyecto Angular, páginas públicas, services
+- [x] Fase 3: proyecto Angular, páginas públicas, services — ✅ verificado:
+      build OK (lazy chunks), las 5 rutas responden 200, nginx sirve con
+      fallback SPA y gzip, CORS correcto, pila Docker completa (3 servicios)
 - [ ] Fase 4: guard + interceptor + admin

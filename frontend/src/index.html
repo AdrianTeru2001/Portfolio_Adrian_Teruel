@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+
+  <!-- viewport: obligatorio para responsive (sin él, el móvil "hace zoom out") -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ======================================================================
+       SEO BÁSICO (los recruiters buscan por nombre)
+       ====================================================================== -->
+  <title>Adrián Teruel — Desarrollador Full Stack Java / Angular</title>
+  <meta name="description"
+        content="Portfolio personal de Adrián Teruel Reina: proyectos, trayectoria académica y profesional, competencias en Java, Spring Boot y Angular.">
+  <!-- canonical = URL canónica; evita contenido duplicado si el sitio
+       responde en varias URLs (adrianderuel.dev/ y /index.html) -->
+  <link rel="canonical" href="https://adrianteruel.example/">
+
+  <!-- Open Graph: lo que se pinta al compartir en LinkedIn/WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Adrián Teruel — Desarrollador Full Stack">
+  <meta property="og:description" content="Portfolio, proyectos y trayectoria profesional.">
+  <meta property="og:locale" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+
+  <!--
+    theme-color pinta la barra del navegador en móvil (Android/Chrome)
+    con el color de la marca.
+  -->
+  <meta name="theme-color" content="#0f172a">
+
+  <base href="/">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<!--
+  lang="es": el idioma REAL del contenido → lo usan lectores de pantalla
+  y Google para clasificar el sitio. Antes decía "en" (era el default
+  del CLI).
+-->
+<body>
+  <app-root></app-root>
+  <!--
+    Fallback si JavaScript no carga: Angular es una SPA, sin JS no pinta
+    nada. Este mensaje evita una pantalla completamente en blanco.
+  -->
+  <noscript>
+    Este portfolio requiere JavaScript. Actívalo en tu navegador para verlo.
+  </noscript>
+</body>
+</html>

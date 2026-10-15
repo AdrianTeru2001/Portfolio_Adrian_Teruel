@@ -35,17 +35,17 @@ Portfolio_Adrian_Teruel/
 
 ---
 
-## 🚀 Puesta en marcha (BBDD + API)
+## 🚀 Puesta en marcha
 
 ```bash
 # 1. Crear tu copia local de las variables de entorno
 cp .env.example .env        # en Windows: copy .env.example .env
 
-# 2. Arrancar PostgreSQL + la API REST (compila la imagen del backend)
+# 2. Arrancar la pila completa (PostgreSQL + API + frontend nginx)
 docker compose up -d --build
 
-# 3. Comprobar que vive
-docker compose ps           # debe indicar "healthy"
+# 3. Comprobar que viven
+docker compose ps           # los 3 servicios; postgres debe decir "healthy"
 docker compose logs -f      # Ctrl+C para salir del log
 
 # 4. Pararlo cuando termines (los datos se conservan en el volumen)
@@ -54,8 +54,28 @@ docker compose down
 # ⚠️ docker compose down -v   →  BORRA el volumen = pierdes los datos
 ```
 
-Conéctate a la BBDD con DBeaver/pgAdmin: host `localhost`, puerto `5433`
-(⚠️ en este equipo el 5432 lo ocupa un PostgreSQL nativo, por eso mapeamos 5433),
+Una vez levantado:
+
+| Servicio | URL |
+|---|---|
+| Frontend (nginx) | http://localhost:4200 |
+| API REST | http://localhost:8080/api |
+| PostgreSQL | `localhost:5433` (⚠️ en este equipo el 5432 lo ocupa un PG nativo) |
+
+### 💻 Desarrollo del frontend (Fase 3)
+
+Para iterar con recarga en caliente (sin reconstruir Docker):
+
+```bash
+cd frontend
+# ⚠️ Requiere Node ≥ 20.19 (recomendado 22). Con fnm:
+eval "$(fnm env)" && fnm use 22
+
+npm install    # solo la primera vez
+npm start      # → http://localhost:4200 (recarga en caliente)
+```
+
+Conéctate a la BBDD con DBeaver/pgAdmin: host `localhost`, puerto `5433`,
 usuario `portfolio_user`, contraseña `portfolio_password`, BBDD `portfolio`.
 
 ### API REST (Fase 1)
@@ -99,7 +119,7 @@ curl -X POST http://localhost:8080/api/proyectos \
 - [x] **Fase 0** — Estructura del repo, Docker Compose con PostgreSQL, documentación
 - [x] **Fase 1** — Backend: entidades, Flyway + seeds, CRUD + DTOs
 - [x] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
-- [ ] **Fase 3** — Frontend: páginas públicas consumiendo la API
+- [x] **Fase 3** — Frontend: páginas públicas consumiendo la API (Angular 21, signals, lazy loading, Docker/nginx)
 - [ ] **Fase 4** — Admin: guard, interceptor, formularios de edición
 - [ ] **Fase 5** — Pulido: diseño, responsive, SEO básico
 - [ ] **Fase 6** — Tests (JUnit + Mockito / specs de Angular)

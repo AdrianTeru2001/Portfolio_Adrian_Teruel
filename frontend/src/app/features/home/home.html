@@ -1,0 +1,88 @@
+<!--
+  PÁGINA HOME
+  Estructura: HERO (presentación) → PROYECTOS DESTACADOS → CTA contacto
+-->
+<section class="hero">
+  <div class="hero__contenido">
+    <p class="hero__saludo">¡Hola! 👋 Soy</p>
+    <h1 class="hero__nombre">{{ perfil()?.nombre ?? 'Adrián Teruel' }}</h1>
+    <h2 class="hero__titulo">{{ perfil()?.tituloProfesional ?? 'Desarrollador Full Stack' }}</h2>
+
+    <p class="hero__bio">{{ perfil()?.bio }}</p>
+
+    <!--
+      [routerLink] = binding: el valor se evalúa en TS.
+      routerLink (sin corchetes) = valor literal en el HTML.
+    -->
+    <div class="hero__acciones">
+      <a routerLink="/proyectos" class="btn btn--primario">Ver proyectos</a>
+      <a routerLink="/contacto" class="btn btn--secundario">Contactar</a>
+    </div>
+
+    <!-- Enlaces rápidos con datos del perfil (solo si existen) -->
+    <div class="hero__redes">
+      @if (perfil()?.githubUrl; as github) {
+        <a [href]="github" target="_blank" rel="noopener">GitHub ↗</a>
+      }
+      @if (perfil()?.linkedinUrl; as linkedin) {
+        <a [href]="linkedin" target="_blank" rel="noopener">LinkedIn ↗</a>
+      }
+      @if (perfil()?.ubicacion; as ubicacion) {
+        <span class="hero__ubicacion">📍 {{ ubicacion }}</span>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ---------------------------------------------------------------------- -->
+<section class="destacados">
+  <div class="destacados__cabecera">
+    <h2>Proyectos destacados</h2>
+    <a routerLink="/proyectos" class="destacados__ver">Ver todos →</a>
+  </div>
+
+  <!--
+    @if / @for = control flow de Angular 14+ (en vez de *ngIf/*ngFor):
+    compila más rápido y no necesita módulos extra.
+    track = le dice a Angular qué fila cambió (diffing eficiente).
+  -->
+  @if (destacados().length === 0) {
+    <p class="vacio">Cargando proyectos…</p>
+  } @else {
+    <div class="destacados__grid">
+      @for (proyecto of destacados(); track proyecto.id) {
+        <article class="card">
+          <div class="card__body">
+            <h3 class="card__titulo">{{ proyecto.nombre }}</h3>
+            <p class="card__desc">{{ proyecto.descripcion }}</p>
+
+            @if (proyecto.tecnologias; as tecnologias) {
+              <div class="card__tags">
+                <!-- split(',') convierte "A, B, C" en array [A, B, C] -->
+                @for (tech of tecnologias.split(','); track tech) {
+                  <span class="tag">{{ tech.trim() }}</span>
+                }
+              </div>
+            }
+
+            <div class="card__enlaces">
+              @if (proyecto.urlRepo; as repo) {
+                <a [href]="repo" target="_blank" rel="noopener">Código ↗</a>
+              }
+              @if (proyecto.urlDemo; as demo) {
+                <a [href]="demo" target="_blank" rel="noopener">Demo ↗</a>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+<!-- CTA final -->
+<section class="cta">
+  <h2>¿Hablamos?</h2>
+  <p>Estoy disponible para nuevas oportunidades profesionales.</p>
+  <a routerLink="/contacto" class="btn btn--primario">Escríbeme</a>
+</section>

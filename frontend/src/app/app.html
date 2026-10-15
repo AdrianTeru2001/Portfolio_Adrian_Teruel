@@ -1,0 +1,12 @@
+<!--
+  ESTRUCTURA RAÍZ
+  navbar (fijo) → router-outlet (página actual) → footer (fijo)
+-->
+<app-navbar />
+
+<main class="principal">
+  <!-- Hueco donde Angular inserta el componente de la ruta activa -->
+  <router-outlet />
+</main>
+
+<app-footer />

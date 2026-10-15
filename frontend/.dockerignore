@@ -1,0 +1,22 @@
+# Exclusiones para el contexto de build de Docker (`.dockerignore`).
+# Análogo al .gitignore pero para docker build: lo que NO debe entrar en la
+# imagen (ahorra tiempo y evita copiar secretos/node_modules gigantes).
+#
+# REGLA: como en .gitignore, un "#" solo cuenta como comentario si EMPIEZA
+# la línea. Los patrones van solos.
+
+# Caché y dependencias: se regeneran con npm ci DENTRO de la imagen
+node_modules
+.angular
+
+# Artefactos de builds anteriores
+dist
+
+# Repo y documentación: no hacen falta dentro de la imagen
+.git
+*.md
+
+# Editores y ficheros de configuración
+.vscode
+.gitignore
+Dockerfile

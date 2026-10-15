@@ -1,0 +1,173 @@
+.seccion {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 1rem;
+
+  &__titulo {
+    color: #f8fafc;
+    margin: 0 0 0.4rem;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+  }
+
+  &__sub {
+    color: #94a3b8;
+    margin: 0 0 2.5rem;
+  }
+}
+
+/* Layout: formulario + datos en 2 columnas (1 en móvil) */
+.contacto {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================ FORMULARIO ============================ */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    background: #1e293b;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    color: #f1f5f9;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;   // el textarea solo redimensiona verticalmente
+
+    &::placeholder { color: #64748b; }
+
+    &:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    // Estado inválido tras tocar el campo (ng-untouched/ng-touched)
+    &:invalid:not(:placeholder-shown) {
+      border-color: rgba(248, 113, 113, 0.6);
+    }
+  }
+
+  textarea { min-height: 140px; }
+}
+
+.contador {
+  color: #64748b;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.error {
+  color: #fca5a5;
+  font-size: 0.8rem;
+}
+
+/* Botón */
+.btn {
+  align-self: flex-start;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+
+  &--primario {
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
+
+    &:hover:not(:disabled) { transform: translateY(-2px); }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+/* Avisos */
+.aviso {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+
+  &--ok {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #6ee7b7;
+  }
+
+  &--mal {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+  }
+}
+
+/* ==================== DATOS DIRECTOS ==================== */
+.datos {
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  padding: 1.5rem;
+  align-self: start;
+  position: sticky;      // se queda visible al hacer scroll en la columna
+  top: 5rem;
+
+  h2 {
+    margin: 0 0 1.25rem;
+    color: #f1f5f9;
+    font-size: 1.1rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+
+    &:last-child { border-bottom: none; }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+      word-break: break-all;   // emails largos no rompen el layout
+      &:hover { text-decoration: underline; }
+    }
+
+    span:not(.datos__label) { color: #cbd5e1; font-size: 0.9rem; }
+  }
+
+  &__label {
+    color: #64748b;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}

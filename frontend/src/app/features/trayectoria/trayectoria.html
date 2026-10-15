@@ -1,0 +1,83 @@
+<!--
+  PÁGINA TRAYECTORIA
+  Timeline vertical + sección de competencias agrupadas.
+-->
+
+<!-- ======================= TIMELINE ======================= -->
+<section class="seccion">
+  <h1 class="seccion__titulo">Trayectoria</h1>
+  <p class="seccion__sub">Mi recorrido académico y profesional.</p>
+
+  <!--
+    classList condicional con [ngClass]-like moderno:
+    [class]="'timeline__item timeline__item--' + item.tipo"
+    => genera "timeline__item timeline__item--estudio" o "--experiencia"
+  -->
+  <div class="timeline">
+    @for (item of lineaDeVida(); track item.id) {
+      <article [class]="'timeline__item timeline__item--' + item.tipo">
+        <!-- Punto de la línea de tiempo -->
+        <span class="timeline__punto" [class.actual]="item.enCurso"></span>
+
+        <div class="timeline__cuerpo">
+          <div class="timeline__fechas">
+            <!-- DatePipe: transforma "2023-09-01" → "sep. 2023" -->
+            {{ item.inicio | date: 'MMM yyyy' }}
+            –
+            @if (item.enCurso) {
+              <span class="badge badge--actual">Actualidad</span>
+            } @else if (item.fin) {
+              {{ item.fin | date: 'MMM yyyy' }}
+            }
+          </div>
+
+          <h3 class="timeline__titulo">{{ item.titulo }}</h3>
+          <p class="timeline__subtitulo">{{ item.subtitulo }}</p>
+
+          @if (item.descripcion; as desc) {
+            <p class="timeline__desc">{{ desc }}</p>
+          }
+        </div>
+      </article>
+    } @empty {
+      <p class="vacio">Aún no hay datos de trayectoria.</p>
+    }
+  </div>
+</section>
+
+<!-- ======================= COMPETENCIAS ======================= -->
+<section class="seccion">
+  <h2 class="seccion__titulo">Competencias</h2>
+
+  <div class="competencias">
+    @for (grupo of porCategoria(); track grupo.categoria) {
+      <div class="competencias__grupo">
+        <h3 class="competencias__categoria">{{ etiquetaCategoria(grupo.categoria) }}</h3>
+
+        <div class="competencias__lista">
+          @for (c of grupo.items; track c.id) {
+            <div class="skill">
+              <div class="skill__info">
+                <span class="skill__nombre">{{ c.nombre }}</span>
+                @if (c.subgrupo; as subgrupo) {
+                  <span class="skill__sub">{{ subgrupo }}</span>
+                }
+              </div>
+              <!--
+                Nivel 1..5 → 5 "puntos" llenos o vacíos.
+                [class.lleno]="i <= c.nivel" = binding de clase booleano:
+                añade la clase "lleno" cuando la condición es true.
+              -->
+              <div class="skill__nivel" role="img"
+                   [attr.aria-label]="'Nivel ' + c.nivel + ' de 5'">
+                @for (i of [1, 2, 3, 4, 5]; track i) {
+                  <span [class.lleno]="i <= c.nivel"></span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

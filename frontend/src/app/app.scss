@@ -1,0 +1,6 @@
+/* Shell de la app: alturas mínimas para que el footer quede al fondo
+   aunque la página corta (flex en el body, ver styles.scss) */
+.principal {
+  flex: 1;               // crece para empujar el footer hacia abajo
+  min-height: 0;
+}

@@ -132,18 +132,20 @@ services:
         condition: service_healthy   # esperar a que la BBDD pase el healthcheck
 
   # ---------------------------------------------------------------------------
-  # SERVICIO 3: Frontend Angular  (SE ACTIVARÁ EN LA FASE 3)
+  # SERVICIO 3: Frontend Angular  (FASE 3)
   # ---------------------------------------------------------------------------
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: portfolio-frontend
-  #   restart: unless-stopped
-  #   ports:
-  #     - "4200:80"        # nginx sirve el HTML/JS compilado de Angular
-  #   depends_on:
-  #     - backend          # el frontend necesita la API disponible
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    restart: unless-stopped
+    ports:
+      # 4200 en el HOST → 80 (nginx) dentro del contenedor.
+      # Usamos 4200 para no chocar con `ng serve` si lo dejas corriendo a la vez.
+      - "4200:80"
+    depends_on:
+      - backend   # el frontend necesita la API (aunque solo al cargar la SPA)
 
 # -----------------------------------------------------------------------------
 # DEFINICIÓN DE VOLÚMENES A NIVEL SUPERIOR

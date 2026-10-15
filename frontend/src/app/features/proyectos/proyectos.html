@@ -1,0 +1,96 @@
+<!--
+  PÁGINA PROYECTOS
+  Buscador + chips de tecnología + grid de tarjetas.
+-->
+<section class="seccion">
+  <h1 class="seccion__titulo">Proyectos</h1>
+  <p class="seccion__sub">Una selección de trabajos personales y profesionales.</p>
+
+  <!--
+    BUSCADOR
+    [value] + (input) = "one-way down" (estado → vista) + "event up" (vista → estado):
+    patrón recomendado de Angular en lugar de [(ngModel)] doble binding
+    para inputs controlados por signals.
+  -->
+  <div class="buscador">
+    <input
+      type="search"
+      placeholder="Buscar por nombre o tecnología…"
+      [value]="filtro()"
+      (input)="filtro.set($any($event.target).value)"
+      aria-label="Buscar proyectos" />
+  </div>
+
+  <!-- Chips: atajos de filtro por tecnología -->
+  @if (tecnologias().length > 0) {
+    <div class="chips">
+      @for (tech of tecnologias(); track tech) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--activo]="filtro() === tech"
+          (click)="filtrarPorTech(tech)">
+          {{ tech }}
+        </button>
+      }
+      @if (filtro()) {
+        <button type="button" class="chip chip--limpiar" (click)="filtro.set('')">
+          ✕ Limpiar
+        </button>
+      }
+    </div>
+  }
+
+  <!-- GRID -->
+  @if (visibles().length === 0) {
+    <p class="vacio">
+      @if (filtro()) {
+        No hay proyectos que coincidan con "{{ filtro() }}".
+      } @else {
+        Cargando proyectos…
+      }
+    </p>
+  } @else {
+    <div class="grid">
+      @for (proyecto of visibles(); track proyecto.id) {
+        <article class="card" [class.card--destacado]="proyecto.destacado">
+          @if (proyecto.destacado) {
+            <span class="card__badge">Destacado</span>
+          }
+
+          <div class="card__body">
+            <div class="card__cabecera">
+              <h2 class="card__titulo">{{ proyecto.nombre }}</h2>
+              @if (proyecto.fecha; as fecha) {
+                <!--
+                  slice:'0:4' = "pipe" de Angular: recorta el string.
+                  "2026-10-08" → "2026" (los pipes se encadenan con |)
+                -->
+                <span class="card__anio">{{ fecha | date: 'yyyy' }}</span>
+              }
+            </div>
+
+            <p class="card__desc">{{ proyecto.descripcion }}</p>
+
+            @if (proyecto.tecnologias; as tecnologias) {
+              <div class="card__tags">
+                @for (tech of tecnologias.split(','); track tech) {
+                  <span class="tag">{{ tech.trim() }}</span>
+                }
+              </div>
+            }
+
+            <div class="card__enlaces">
+              @if (proyecto.urlRepo; as repo) {
+                <a [href]="repo" target="_blank" rel="noopener">Ver código ↗</a>
+              }
+              @if (proyecto.urlDemo; as demo) {
+                <a [href]="demo" target="_blank" rel="noopener">Demo en vivo ↗</a>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

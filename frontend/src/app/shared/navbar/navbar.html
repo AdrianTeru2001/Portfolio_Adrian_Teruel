@@ -1,0 +1,36 @@
+<!--
+  NAVBAR
+  routerLink = "redirector interno de Angular" (NO recarga la página).
+  routerLinkActive = añade la clase "activo" al enlace de la ruta actual.
+-->
+<header class="navbar">
+  <div class="navbar__contenido">
+    <!-- Marca / inicio -->
+    <a routerLink="/" class="navbar__marca" (click)="cerrarMenu()">
+      <span class="navbar__inicial">AT</span>
+      <span class="navbar__nombre">Adrián Teruel</span>
+    </a>
+
+    <!-- Botón hamburguesa (solo visible en móvil, ver SCSS) -->
+    <button
+      class="navbar__toggle"
+      type="button"
+      (click)="alternarMenu()"
+      [attr.aria-expanded]="menuAbierto()"
+      aria-label="Menú de navegación">
+      <span class="navbar__barra" [class.es-x]="menuAbierto()"></span>
+      <span class="navbar__barra" [class.oculta]="menuAbierto()"></span>
+      <span class="navbar__barra" [class.es-x]="menuAbierto()"></span>
+    </button>
+
+    <!-- Enlaces -->
+    <nav class="navbar__enlaces" [class.abierto]="menuAbierto()">
+      <a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{exact: true}"
+         (click)="cerrarMenu()">Inicio</a>
+      <a routerLink="/trayectoria" routerLinkActive="activo" (click)="cerrarMenu()">Trayectoria</a>
+      <a routerLink="/proyectos" routerLinkActive="activo" (click)="cerrarMenu()">Proyectos</a>
+      <a routerLink="/contacto" routerLinkActive="activo" class="navbar__cta"
+         (click)="cerrarMenu()">Contacto</a>
+    </nav>
+  </div>
+</header>
