@@ -1,0 +1,123 @@
+/* Login: tarjeta centrada en la pantalla */
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;      // centra vertical Y horizontalmente
+  padding: 1.25rem;
+  // Mismo degradado sutil que la home para mantener coherencia visual
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(56, 189, 248, 0.10), transparent 55%),
+    radial-gradient(ellipse at 70% 100%, rgba(99, 102, 241, 0.10), transparent 55%),
+    #0f172a;
+
+  &__tarjeta {
+    width: 100%;
+    max-width: 400px;
+    background: #1e293b;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 14px;
+    padding: 2.25rem;
+
+    h1 {
+      margin: 0 0 0.35rem;
+      color: #f8fafc;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__sub {
+    margin: 0 0 1.75rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  /* Formulario */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  &__volver {
+    display: block;
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.85rem;
+    text-decoration: none;
+
+    &:hover {
+      color: #38bdf8;
+    }
+  }
+}
+
+/* Campos (patrón repetido en todo el admin) */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  label {
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  input,
+  textarea,
+  select {
+    background: #0f172a;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    color: #f1f5f9;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder { color: #64748b; }
+
+    &:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+  }
+}
+
+/* Botón */
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+
+  &--primario {
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: #fff;
+
+    &:hover:not(:disabled) { transform: translateY(-2px); }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Aviso de error */
+.aviso {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+
+  &--mal {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+  }
+}

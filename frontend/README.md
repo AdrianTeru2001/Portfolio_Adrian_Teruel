@@ -25,8 +25,13 @@ src/app/
 ├── app.config.ts                  # providers: router, http, signals
 ├── core/                          # "lo que no es UI"
 │   ├── api-url.token.ts           # InjectionToken de la URL de la API
+│   ├── auth/                      # Fase 4: JWT en el frontend
+│   │   ├── auth.service.ts        # login/logout + signal de sesión
+│   │   ├── auth.interceptor.ts    # añade Authorization + gestiona 401
+│   │   └── admin.guard.ts         # protege /admin (canMatch)
 │   ├── models/portfolio.models.ts # interfaces TS = espejo de los DTOs Java
 │   └── services/                  # HttpClient → Observables tipados
+│       ├── admin.service.ts       # escrituras (crear/editar/borrar)
 ├── shared/                        # componentes reutilizables
 │   ├── navbar/                    # menú responsive con signal
 │   └── footer/                    # demo de toSignal()
@@ -35,7 +40,13 @@ src/app/
     ├── trayectoria/               # timeline + competencias (computed)
     ├── proyectos/                 # buscador + chips (filtro en cliente)
     ├── contacto/                  # formulario con validación (ngModel)
-    └── no-encontrado/             # 404
+    ├── no-encontrado/             # 404
+    └── admin/                     # panel privado (Fase 4, tras login)
+        ├── login/                 # formulario de acceso (POST /auth/login)
+        ├── layout/                # shell admin (navbar + <router-outlet/>)
+        ├── dashboard/             # resumen y accesos
+        ├── proyectos-admin/       # CRUD completo (tabla + form crear/editar)
+        └── perfil-admin/          # edición del perfil (PUT /perfil)
 ```
 
 ## Conceptos clave aplicados (para repasar)
@@ -49,6 +60,11 @@ src/app/
 | `[(ngModel)]` + validación | `contacto.html` |
 | Inyección con `inject()` + token | `core/api-url.token.ts` |
 | Zoneless (`provideZonelessChangeDetection`) | `app.config.ts` |
+| **JWT: service + signal de sesión** | `core/auth/auth.service.ts` |
+| **Interceptor funcional (`withInterceptors`)** | `core/auth/auth.interceptor.ts` |
+| **Guard `canMatch`** | `core/auth/admin.guard.ts` |
+| **Rutas anidadas + lazy loading** | `app.routes.ts` (bloque `/admin`) |
+| **CRUD con mutación local de signals** | `proyectos-admin.ts` |
 
 ## Docker
 
@@ -65,4 +81,7 @@ incluye el fallback SPA (`try_files ... /index.html`) + gzip.
 - [x] Fase 3: proyecto Angular, páginas públicas, services — ✅ verificado:
       build OK (lazy chunks), las 5 rutas responden 200, nginx sirve con
       fallback SPA y gzip, CORS correcto, pila Docker completa (3 servicios)
-- [ ] Fase 4: guard + interceptor + admin
+- [x] Fase 4: panel admin — ✅ verificado:
+      login (200/401), CRUD proyectos (201+Location / 200 / 204 / 404),
+      PUT perfil (200), guard redirige a /admin/login sin sesión,
+      interceptor añade `Authorization`, rutas admin responden 200

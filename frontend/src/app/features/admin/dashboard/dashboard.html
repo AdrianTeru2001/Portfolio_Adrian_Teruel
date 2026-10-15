@@ -1,0 +1,54 @@
+<!--
+  DASHBOARD: tarjetas de estadística + accesos directos.
+-->
+<section class="dashboard">
+  <h1>Dashboard</h1>
+  <p class="dashboard__sub">Resumen rápido del contenido del portfolio.</p>
+
+  <!-- ==================== TARJETAS DE ESTADÍSTICA ==================== -->
+  <div class="stats">
+    <article class="stat">
+      <span class="stat__valor">{{ proyectos().length }}</span>
+      <span class="stat__etiqueta">Proyectos totales</span>
+    </article>
+
+    <article class="stat stat--destacado">
+      <span class="stat__valor">{{ destacados() }}</span>
+      <span class="stat__etiqueta">Destacados en la home</span>
+    </article>
+
+    <!--
+      Ejemplo de stat condicional: si no hay proyectos, sugiere crear el
+      primero. `@if` sobre el signal.
+    -->
+    @if (proyectos().length === 0) {
+      <article class="stat stat--aviso">
+        <span class="stat__valor">0</span>
+        <span class="stat__etiqueta">Aún no hay proyectos creados</span>
+      </article>
+    }
+  </div>
+
+  <!-- ==================== ACCESOS DIRECTOS ==================== -->
+  <h2 class="dashboard__titulosec">Gestionar</h2>
+
+  <div class="accesos">
+    <a routerLink="/admin/proyectos" class="acceso">
+      <span class="acceso__icono">🗂️</span>
+      <span class="acceso__texto">
+        <strong>Proyectos</strong>
+        <small>Crear, editar y borrar proyectos del portfolio</small>
+      </span>
+      <span class="acceso__flecha">→</span>
+    </a>
+
+    <a routerLink="/admin/perfil" class="acceso">
+      <span class="acceso__icono">👤</span>
+      <span class="acceso__texto">
+        <strong>Perfil personal</strong>
+        <small>Editar bio, enlaces, contacto y datos visibles</small>
+      </span>
+      <span class="acceso__flecha">→</span>
+    </a>
+  </div>
+</section>

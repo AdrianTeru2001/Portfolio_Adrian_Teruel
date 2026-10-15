@@ -1,0 +1,32 @@
+<!--
+  LAYOUT DEL PANEL ADMIN
+  Barra superior fija con navegación admin + <router-outlet/> para las
+  páginas internas (dashboard, proyectos, perfil).
+-->
+<header class="admin-nav">
+  <div class="admin-nav__contenido">
+    <!-- Marca: "Admin" + enlace a la web pública -->
+    <div class="admin-nav__marca">
+      <span class="admin-nav__badge">ADMIN</span>
+      <a routerLink="/" class="admin-nav__volver">Ver web ↗</a>
+    </div>
+
+    <!-- Enlaces de secciones del panel -->
+    <nav class="admin-nav__enlaces">
+      <a routerLink="/admin" routerLinkActive="activo"
+         [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/admin/proyectos" routerLinkActive="activo">Proyectos</a>
+      <a routerLink="/admin/perfil" routerLinkActive="activo">Perfil</a>
+    </nav>
+
+    <!-- Botón salir -->
+    <button type="button" class="admin-nav__salir" (click)="salir()">
+      Salir
+    </button>
+  </div>
+</header>
+
+<!-- Contenido de la página activa dentro del panel -->
+<main class="admin-contenido">
+  <router-outlet />
+</main>

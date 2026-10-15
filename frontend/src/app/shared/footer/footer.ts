@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { PerfilService } from '../../core/services/perfil.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -15,7 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
  */
 @Component({
   selector: 'app-footer',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })

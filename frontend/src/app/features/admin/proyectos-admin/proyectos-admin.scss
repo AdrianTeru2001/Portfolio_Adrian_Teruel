@@ -1,0 +1,257 @@
+/* Página admin genérica: cabecera + contenido */
+.admin-page {
+  h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  &__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ============================ BOTONES ============================ */
+.btn {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+
+  &--primario {
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: #fff;
+
+    &:hover:not(:disabled) { transform: translateY(-2px); }
+  }
+
+  &--secundario {
+    background: transparent;
+    border: 1px solid #475569;
+    color: #cbd5e1;
+
+    &:hover { border-color: #38bdf8; }
+  }
+}
+
+/* ============================ FORMULARIO ============================ */
+.formulario {
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 12px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+
+  h2 {
+    margin: 0 0 0.5rem;
+    color: #f1f5f9;
+    font-size: 1.2rem;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Campos (mismo patrón que login/contacto) */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  label {
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    background: #0f172a;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    color: #f1f5f9;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.92rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+
+    &::placeholder { color: #64748b; }
+
+    &:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+  }
+}
+
+/* Dos columnas para campos cortos (URL + fecha, etc.) */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Checkbox "destacado" */
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: #6366f1;   // color del tick nativo
+  }
+}
+
+/* ============================ TABLA ============================ */
+.tabla-wrapper {
+  // overflow-x: en móvil la tabla puede desbordar → scroll horizontal
+  overflow-x: auto;
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;   // bordes pegados, sin huecos
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.85rem 1rem;
+  }
+
+  thead {
+    // Fila de cabecera oscura con texto claro
+    background: rgba(148, 163, 184, 0.08);
+
+    th {
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  tbody tr {
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+
+    // Sombreado al pasar el ratón por la fila
+    &:hover { background: rgba(148, 163, 184, 0.04); }
+  }
+
+  &__nombre {
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+
+  &__tech {
+    color: #94a3b8;
+    max-width: 320px;
+    // Corta texto largo con puntos suspensivos
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__acciones-th,
+  &__acciones {
+    text-align: right;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+}
+
+/* Badge sí/no del "destacado" */
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+
+  &--destacado {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+  }
+}
+
+/* Botones pequeños de acción en la tabla */
+.btn-mini {
+  padding: 0.35rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &--editar {
+    background: rgba(56, 189, 248, 0.15);
+    color: #7dd3fc;
+
+    &:hover { background: rgba(56, 189, 248, 0.25); }
+  }
+
+  &--borrar {
+    background: rgba(248, 113, 113, 0.15);
+    color: #fca5a5;
+
+    &:hover { background: rgba(248, 113, 113, 0.25); }
+  }
+}
+
+/* ============================ MENSAJES ============================ */
+.aviso {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+
+  &--ok {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #6ee7b7;
+  }
+
+  &--mal {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+  }
+}
+
+.vacio {
+  color: #64748b;
+  font-style: italic;
+}

@@ -120,7 +120,7 @@ curl -X POST http://localhost:8080/api/proyectos \
 - [x] **Fase 1** — Backend: entidades, Flyway + seeds, CRUD + DTOs
 - [x] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
 - [x] **Fase 3** — Frontend: páginas públicas consumiendo la API (Angular 21, signals, lazy loading, Docker/nginx)
-- [ ] **Fase 4** — Admin: guard, interceptor, formularios de edición
+- [x] **Fase 4** — Admin: guard, interceptor, login JWT y CRUD de proyectos + edición de perfil
 - [ ] **Fase 5** — Pulido: diseño, responsive, SEO básico
 - [ ] **Fase 6** — Tests (JUnit + Mockito / specs de Angular)
 - [ ] **Fase 7** — Despliegue real + CI/CD (Render + Vercel)

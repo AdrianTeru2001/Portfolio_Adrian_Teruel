@@ -1,0 +1,64 @@
+<!--
+  PÁGINA LOGIN
+  Tarjeta centrada con usuario + contraseña. Mismo lenguaje visual que el
+  resto del panel (fondo oscuro, tarjetas #1e293b).
+-->
+<section class="login">
+  <div class="login__tarjeta">
+    <h1>Acceso al panel</h1>
+    <p class="login__sub">Zona privada de administración del portfolio.</p>
+
+    <!--
+      #form="ngForm" expone la instancia para leer form.valid en el botón.
+      (ngSubmit) se dispara al pulsar Enter o el botón "Entrar".
+    -->
+    <form #form="ngForm" (ngSubmit)="enviar()" novalidate>
+      <div class="campo">
+        <label for="username">Usuario</label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          required
+          autocomplete="username"
+          [(ngModel)]="credenciales.username"
+          placeholder="admin" />
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
+          autocomplete="current-password"
+          [(ngModel)]="credenciales.password"
+          placeholder="••••••••" />
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn--primario"
+        [disabled]="form.invalid || estado() === 'enviando'">
+        @if (estado() === 'enviando') {
+          Comprobando…
+        } @else {
+          Entrar
+        }
+      </button>
+
+      <!--
+        Aviso de credenciales incorrectas. Usamos aria-live para que los
+        lectores de pantalla lo anuncien sin mover el foco (accesibilidad).
+      -->
+      @if (estado() === 'error') {
+        <p class="aviso aviso--mal" role="alert">
+          Usuario o contraseña incorrectos.
+        </p>
+      }
+    </form>
+
+    <a class="login__volver" routerLink="/">← Volver al portfolio público</a>
+  </div>
+</section>

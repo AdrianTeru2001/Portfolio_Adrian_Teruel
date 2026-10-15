@@ -1,0 +1,195 @@
+<!--
+  GESTIÓN DE PROYECTOS (CRUD)
+  Estructura: cabecera con botón "Nuevo" → mensaje feedback → tabla de
+  proyectos (o formulario crear/editar) → confirmación de borrado.
+-->
+<section class="admin-page">
+  <div class="admin-page__cabecera">
+    <h1>Proyectos</h1>
+    <!-- Botón "Nuevo" solo cuando el formulario NO está visible -->
+    @if (!formVisible()) {
+      <button type="button" class="btn btn--primario" (click)="abrirCrear()">
+        + Nuevo proyecto
+      </button>
+    }
+  </div>
+
+  <!-- ==================== MENSAJE FEEDBACK (éxito/error) ==================== -->
+  @if (mensaje(); as m) {
+    <p [class]="'aviso aviso--' + m.tipo" role="status">{{ m.texto }}</p>
+  }
+
+  <!-- ==================== FORMULARIO CREAR/EDITAR ==================== -->
+  @if (formVisible()) {
+    <div class="formulario">
+      <h2>
+        @if (modoForm() === 'editar') {
+          Editar proyecto
+        } @else {
+          Nuevo proyecto
+        }
+      </h2>
+
+      <!--
+        [(ngModel)] con nombre="..." (obligatorio en formularios con ngModel)
+        y (ngModelChange) para enviar el cambio a nuestro signal a través de
+        cambiarCampo(). Como el modelo vive en un signal, enlazamos valor +
+        evento en vez del doble binding clásico sobre una propiedad normal.
+      -->
+      <div class="campo">
+        <label for="nombre">Nombre *</label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          required
+          maxlength="200"
+          [ngModel]="form().nombre"
+          (ngModelChange)="cambiarCampo('nombre', $event)"
+          placeholder="Nombre del proyecto" />
+      </div>
+
+      <div class="campo">
+        <label for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="3"
+          maxlength="5000"
+          [ngModel]="form().descripcion"
+          (ngModelChange)="cambiarCampo('descripcion', $event)"
+          placeholder="Qué hace, para qué sirve…"></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="tecnologias">Tecnologías (separadas por coma)</label>
+        <input
+          id="tecnologias"
+          name="tecnologias"
+          type="text"
+          maxlength="300"
+          [ngModel]="form().tecnologias"
+          (ngModelChange)="cambiarCampo('tecnologias', $event)"
+          placeholder="Angular, Spring Boot, PostgreSQL" />
+      </div>
+
+      <div class="grid2">
+        <div class="campo">
+          <label for="urlRepo">URL del repositorio</label>
+          <input
+            id="urlRepo"
+            name="urlRepo"
+            type="url"
+            maxlength="300"
+            [ngModel]="form().urlRepo"
+            (ngModelChange)="cambiarCampo('urlRepo', $event)"
+            placeholder="https://github.com/..." />
+        </div>
+
+        <div class="campo">
+          <label for="urlDemo">URL de la demo</label>
+          <input
+            id="urlDemo"
+            name="urlDemo"
+            type="url"
+            maxlength="300"
+            [ngModel]="form().urlDemo"
+            (ngModelChange)="cambiarCampo('urlDemo', $event)"
+            placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="campo">
+          <label for="imagenUrl">URL de la imagen</label>
+          <input
+            id="imagenUrl"
+            name="imagenUrl"
+            type="url"
+            maxlength="500"
+            [ngModel]="form().imagenUrl"
+            (ngModelChange)="cambiarCampo('imagenUrl', $event)"
+            placeholder="https://..." />
+        </div>
+
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <!--
+            type="date" da un selector nativo y su valor ya es "yyyy-MM-dd",
+            el formato que espera el backend (LocalDate) — sin conversiones.
+          -->
+          <input
+            id="fecha"
+            name="fecha"
+            type="date"
+            [ngModel]="form().fecha"
+            (ngModelChange)="cambiarCampo('fecha', $event)" />
+        </div>
+      </div>
+
+      <!-- Checkbox "destacado" -->
+      <label class="check">
+        <input
+          type="checkbox"
+          name="destacado"
+          [ngModel]="form().destacado"
+          (ngModelChange)="cambiarCampo('destacado', $event)" />
+        <span>Destacar en la página de inicio</span>
+      </label>
+
+      <div class="formulario__acciones">
+        <button type="button" class="btn btn--primario" (click)="guardar()">
+          @if (modoForm() === 'editar') {
+            Guardar cambios
+          } @else {
+            Crear proyecto
+          }
+        </button>
+        <button type="button" class="btn btn--secundario" (click)="cerrar()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== TABLA DE PROYECTOS ==================== -->
+  @if (!formVisible()) {
+    @if (proyectos().length === 0) {
+      <p class="vacio">No hay proyectos todavía. ¡Crea el primero!</p>
+    } @else {
+      <div class="tabla-wrapper">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tecnologías</th>
+              <th>Destacado</th>
+              <th class="tabla__acciones-th">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of proyectos(); track p.id) {
+              <tr>
+                <td class="tabla__nombre">{{ p.nombre }}</td>
+                <td class="tabla__tech">{{ p.tecnologias ?? '—' }}</td>
+                <td>
+                  @if (p.destacado) {
+                    <span class="badge badge--destacado">Sí</span>
+                  } @else {
+                    <span class="badge">No</span>
+                  }
+                </td>
+                <td class="tabla__acciones">
+                  <button type="button" class="btn-mini btn-mini--editar"
+                          (click)="abrirEditar(p)">Editar</button>
+                  <button type="button" class="btn-mini btn-mini--borrar"
+                          (click)="eliminar(p)">Borrar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

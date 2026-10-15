@@ -90,3 +90,56 @@ export interface MensajeContactoRequest {
   email: string;
   contenido: string;
 }
+
+// ============================================================================
+//  AUTENTICACIÓN (Fase 4 — panel admin)
+// ============================================================================
+
+/** Cuerpo que envía POST /api/auth/login */
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+/**
+ * Respuesta del login:
+ * { "token": "eyJ...", "type": "Bearer", "expiresIn": 28800 }
+ * `expiresIn` está en SEGUNDOS (duración del token).
+ */
+export interface AuthResponse {
+  token: string;
+  type: string;
+  expiresIn: number;
+}
+
+/**
+ * Petición de creación/edición de proyecto (POST/PUT /api/proyectos).
+ * OJO: no lleva `id` — el id va en la URL para PUT y lo asigna la BBDD en POST.
+ * Es el espejo del record Java `ProyectoRequest`.
+ */
+export interface ProyectoRequest {
+  nombre: string;
+  descripcion: string | null;
+  tecnologias: string | null;
+  urlRepo: string | null;
+  urlDemo: string | null;
+  imagenUrl: string | null;
+  destacado: boolean;
+  fecha: string | null;   // "yyyy-MM-dd" (ISO) o null
+}
+
+/**
+ * Petición de actualización del perfil (PUT /api/perfil).
+ * Es el espejo del record Java `PerfilUpdateRequest`.
+ */
+export interface PerfilUpdateRequest {
+  nombre: string;
+  tituloProfesional: string | null;
+  bio: string | null;
+  fotoUrl: string | null;
+  email: string;
+  telefono: string | null;
+  linkedinUrl: string | null;
+  githubUrl: string | null;
+  ubicacion: string | null;
+}

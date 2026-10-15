@@ -48,4 +48,16 @@
 
     p { margin: 0; }
   }
+
+  // Enlace discreto al panel de administración
+  &__admin {
+    display: inline-block;
+    margin-top: 0.4rem;
+    color: #475569;
+    font-size: 0.78rem;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+
+    &:hover { color: #94a3b8; }
+  }
 }

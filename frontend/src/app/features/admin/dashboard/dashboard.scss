@@ -1,0 +1,111 @@
+.dashboard {
+  h1 {
+    margin: 0 0 0.35rem;
+    color: #f8fafc;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+  }
+
+  &__sub {
+    margin: 0 0 2rem;
+    color: #94a3b8;
+  }
+
+  &__titulosec {
+    margin: 2.5rem 0 1rem;
+    color: #e2e8f0;
+    font-size: 1.1rem;
+  }
+}
+
+/* Tarjetas de estadística */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.stat {
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &__valor {
+    font-size: 2.4rem;
+    font-weight: 800;
+    // Mismo degradado que el botón primario (coherencia de marca)
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.1;
+  }
+
+  &__etiqueta {
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  // Borde dorado para el de destacados
+  &--destacado {
+    border-color: rgba(250, 204, 21, 0.4);
+  }
+
+  // Aviso tenue cuando no hay nada
+  &--aviso {
+    border-color: rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.06);
+  }
+}
+
+/* Accesos directos */
+.accesos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.acceso {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(167, 139, 250, 0.5);
+  }
+
+  &__icono {
+    font-size: 1.6rem;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    strong {
+      color: #f1f5f9;
+      font-size: 1rem;
+    }
+
+    small {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+  }
+
+  &__flecha {
+    color: #a78bfa;
+    font-size: 1.2rem;
+  }
+}
