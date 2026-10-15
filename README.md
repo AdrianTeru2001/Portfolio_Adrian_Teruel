@@ -68,8 +68,29 @@ usuario `portfolio_user`, contraseña `portfolio_password`, BBDD `portfolio`.
 | GET | `/api/competencias` | Skills por categoría |
 | GET | `/api/proyectos` | Todos (`?tecnologia=x` filtra) |
 | GET | `/api/proyectos/destacados` | Destacados para la home |
-| POST/PUT/DELETE | `/api/proyectos` | CRUD (protegido con JWT en Fase 2) |
-| POST | `/api/contacto` | Formulario de contacto |
+| **POST** | **`/api/auth/login`** | **`{username, password}` → `{token, type, expiresIn}`** |
+| POST/PUT/DELETE | `/api/proyectos`, `/api/perfil`... | CRUD — **requiere `Authorization: Bearer <token>`** (401 sin él) |
+| POST | `/api/contacto` | Formulario de contacto (público) |
+
+**Credenciales del panel admin (seed V3):** usuario `admin`, contraseña
+`AdminPortfolio2026!` — ⚠️ **cámiala antes de desplegar** (ver
+`V3__usuarios_admin.sql`).
+
+**Ejemplo de uso del token:**
+
+```bash
+# 1. Login
+TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"AdminPortfolio2026!"}' \
+  | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+
+# 2. Llamada autenticada
+curl -X POST http://localhost:8080/api/proyectos \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Mi proyecto","destacado":false}'
+```
 
 ---
 
@@ -77,7 +98,7 @@ usuario `portfolio_user`, contraseña `portfolio_password`, BBDD `portfolio`.
 
 - [x] **Fase 0** — Estructura del repo, Docker Compose con PostgreSQL, documentación
 - [x] **Fase 1** — Backend: entidades, Flyway + seeds, CRUD + DTOs
-- [ ] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
+- [x] **Fase 2** — Seguridad: JWT, login, endpoints protegidos
 - [ ] **Fase 3** — Frontend: páginas públicas consumiendo la API
 - [ ] **Fase 4** — Admin: guard, interceptor, formularios de edición
 - [ ] **Fase 5** — Pulido: diseño, responsive, SEO básico

@@ -93,4 +93,4 @@ cd backend
 
 - [x] Fase 0: carpeta y documentación creadas
 - [x] Fase 1: proyecto Spring Boot, entidades, Flyway, CRUD — ✅ API verificada (CRUD completo, validación 400, 404, tests en verde)
-- [ ] Fase 2: Spring Security + JWT
+- [x] Fase 2: Spring Security + JWT — ✅ verificado: login (401 con credenciales mal), token firmado, POST/PUT/DELETE exigen `Bearer` (401 sin token / token falsificado), GET públicos abiertos, tests en verde

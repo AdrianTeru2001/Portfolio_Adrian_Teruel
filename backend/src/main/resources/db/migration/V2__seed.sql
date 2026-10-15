@@ -18,13 +18,13 @@ INSERT INTO perfil (id, nombre, titulo_profesional, bio, foto_url, email,
 VALUES (1,
         'Adrián Teruel Reina',
         'Desarrollador Full Stack Java / Angular',
-        'Estudiante de desarrollo de aplicaciones con pasión por construir ' ||
+        'Trabajador de desarrollo de aplicaciones con pasión por seguir aprendiendo y construir ' ||
         'productos completos: desde la base de datos hasta la interfaz de usuario. ' ||
-        'Busco mi primera oportunidad profesional para seguir creciendo.',
+        'Busco oportunidades profesionales para seguir creciendo.',
         NULL,                                -- foto_url: pon aquí la ruta/foto cuando la tengas
         'adrianteru2001@gmail.com',
         NULL,
-        'https://www.linkedin.com/in/adrianteru2001',
+        'https://www.linkedin.com/in/adri%C3%A1n-teruel-reina-43841b1b9/',
         'https://github.com/AdrianTeru2001',
         'España')
 ON CONFLICT (id) DO NOTHING;
@@ -35,22 +35,24 @@ ON CONFLICT (id) DO NOTHING;
 -- -----------------------------------------------------------------------------
 INSERT INTO estudios (titulo, centro, fecha_inicio, fecha_fin, en_curso, descripcion, orden) VALUES
     ('Grado Superior en Desarrollo de Aplicaciones Web',
-     'IES [tu centro]',
-     DATE '2023-09-01', DATE '2025-06-30', FALSE,
-     'Formación en desarrollo web: Java, bases de datos, JavaScript y metodologías ágiles.', 1),
-    ('Grado Medio en Desarrollo de Aplicaciones Multiplataforma',
-     'IES [tu centro]',
-     DATE '2021-09-01', DATE '2023-06-30', FALSE,
-     'Fundamentos de programación, POO y desarrollo de apps de escritorio y móviles.', 2);
+     'IES Ruíz Gijón',
+     DATE '2020-09-01', DATE '2023-06-20', FALSE,
+     'Formación en desarrollo web: Java, bases de datos, JavaScript y metodologías ágiles.', 1);
 
 -- -----------------------------------------------------------------------------
 -- EXPERIENCIAS (ejemplo — sustituye por las tuyas o déjalas vacías)
 -- -----------------------------------------------------------------------------
 INSERT INTO experiencias (puesto, empresa, fecha_inicio, fecha_fin, en_curso, descripcion, orden) VALUES
-    ('Becario de desarrollo',
-     '[Empresa o FCT]',
-     DATE '2025-02-01', DATE '2025-06-30', FALSE,
-     'Desarrollo de funcionalidades en una API REST y corrección de errores en aplicación interna.', 1);
+    ('Desarrollador Full Stack',
+     'Deloitte',
+     DATE '2023-03-25', DATE '2025-02-15', FALSE,
+     'PROYECTO RENFE - Resolución de incidencias, nuevos desarrollos, mantenimientos... ' || 
+     'Tecnologías: Java, JavaScript, Spring, CSS, BootStrap, Maven, JQuery, SQL, Git, HTML, JSP...', 2),
+     ('Desarrollador de Backend',
+     'Ayesa',
+     DATE '2025-02-16', DATE '2026-09-10', TRUE,
+     'Proyecto HERMES - Soporte técnico, resolución de incidencias y defectos, migración de una aplicación legacy a una nueva plataforma web y desarrollo de nuevas funcionalidades. ' ||
+     'Tecnologías: Java, SpringBoot, Oracle SQL, Git, Angular...', 1);
 
 -- -----------------------------------------------------------------------------
 -- COMPETENCIAS (ejemplo — ajusta niveles a tu realidad)

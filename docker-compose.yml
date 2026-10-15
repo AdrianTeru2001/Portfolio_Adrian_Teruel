@@ -123,6 +123,10 @@ services:
       SPRING_DATASOURCE_PASSWORD: portfolio_password
       # Origen permitido para CORS: el frontend (otro contenedor/host)
       CORS_ALLOWED_ORIGINS: "http://localhost:4200"
+      # Secreto JWT: se lee del .env (que NO está en Git).
+      # Si no existiera, Compose lo dejaría vacío y JwtService fallaría
+      # al arrancar con un mensaje claro (mejor que tokens débiles).
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-local-minimo-32-caracteres-123456}
     depends_on:
       postgres:
         condition: service_healthy   # esperar a que la BBDD pase el healthcheck

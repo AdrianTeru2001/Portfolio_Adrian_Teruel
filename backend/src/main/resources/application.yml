@@ -77,3 +77,16 @@ app:
     # El frontend Angular corre en http://localhost:4200 en desarrollo.
     # En producción se sobreescribe con la variable CORS_ALLOWED_ORIGINS.
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+
+  # ===================================================================
+  # JWT (Fase 2)
+  # ===================================================================
+  jwt:
+    # Secreto para firmar tokens (HS256 exige >= 32 caracteres).
+    # En LOCAL usamos un valor por defecto; en DOCKER/PRODUCCIÓN se
+    # sobreescribe con la variable JWT_SECRET (ver docker-compose.yml).
+    # ⚠️ NUNCA subas un secreto real a Git: solo va en .env / entorno.
+    secret: ${JWT_SECRET:dev-secret-local-minimo-32-caracteres-123456}
+    # Duración del token: 8 horas (28.800.000 ms).
+    # Corta a propósito: si se filtra, en 8h deja de servir.
+    expiration-ms: ${JWT_EXPIRATION_MS:28800000}

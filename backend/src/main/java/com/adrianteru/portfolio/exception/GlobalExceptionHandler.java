@@ -45,6 +45,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 401: credenciales incorrectas en el login.
+     *
+     * <p>{@code BadCredentialsException} la lanza AuthenticationManager cuando
+     * BCrypt no coincide (o el usuario no existe — el mensaje es el mismo a
+     * propósito, para no revelar qué usuarios hay en el sistema).</p>
+     */
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> noAutenticado(
+            org.springframework.security.core.AuthenticationException ex,
+            HttpServletRequest request) {
+        // No devolvemos ex.getMessage() tal cual: puede filtrar internos.
+        return construir(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas", request);
+    }
+
+    /**
      * 400: falló la Bean Validation del DTO ({@code @Valid} en el controller).
      *
      * <p>Recorremos los errores de campo y creamos un mapa
